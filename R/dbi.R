@@ -72,20 +72,6 @@ setMethod("dbConnect", "MonetDBDriver", def=function(drv, dbname="demo", user="m
     else embedded <- dbname
   }
 
-  if (embedded != FALSE) {
-    if (!requireNamespace("MonetDBLite", quietly=T)) {
-      stop("MonetDBLite package required for embedded mode")
-    }
-    MonetDBLite::monetdb_embedded_startup(embedded, !getOption("monetdb.debug.embedded", FALSE), 
-      getOption("monetdb.sequential", TRUE))
-    connenv <- new.env(parent=emptyenv())
-    connenv$conn <- MonetDBLite::monetdb_embedded_connect()
-    connenv$open <- TRUE
-    conn <- new("MonetDBEmbeddedConnection", connenv=connenv)
-    attr(conn, "dbPreExists") <- TRUE
-    return(conn)
-  }
-  
   if (getOption("monetdb.debug.mapi", F)) message("II: Connecting to MonetDB on host ", host, " at "
                                                   ,"port ", port, " to DB ", dbname, " with user ", user, " and a non-printed password, timeout is "
                                                   , timeout, " seconds.")
