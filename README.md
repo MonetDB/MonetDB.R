@@ -14,7 +14,7 @@ First we need to define a connection:
 conn = dbConnect(MonetDB.R::MonetDB(), '<database-name>')
 ```
 
-If the '<database>' argument is left blank, it will default to the 'demo' database.
+If the `<database-name>` argument is omitted, it will default to the 'demo' database.
 
 ## Unit testing
 The unit tests can be run from the shell:
