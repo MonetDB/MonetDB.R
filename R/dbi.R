@@ -146,14 +146,6 @@ setMethod("dbDisconnect", "MonetDBConnection", def=function(conn, ...) {
   invisible(TRUE)
 })
 
-setMethod("dbDisconnect", "MonetDBEmbeddedConnection", def=function(conn, shutdown=FALSE, ...) {
-  if (!conn@connenv$open) warning("already disconnected")
-  conn@connenv$open <- FALSE
-  MonetDBLite::monetdb_embedded_disconnect(conn@connenv$conn)
-  if (shutdown) MonetDBLite::monetdb_embedded_shutdown()
-  invisible(TRUE)
-})
-
 setMethod("dbListTables", "MonetDBConnection", def=function(conn, ..., sys_tables=F, schema_names=F) {
   q <- "select schemas.name as sn, tables.name as tn from sys.tables join sys.schemas on tables.schema_id=schemas.id"
   if (!sys_tables) q <- paste0(q, " where tables.system=false order by sn, tn")
