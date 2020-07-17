@@ -11,8 +11,6 @@ setClass("MonetDBEmbeddedDriver", representation("MonetDBDriver"))
 # allow instantiation of this driver with MonetDB to allow existing programs to work
 MonetR <- MonetDB <- MonetDBR <- MonetDB.R <- function() new("MonetDBDriver")
 
-MonetDBLite <- monetdblite <- RMonetDBLite <- rmonetdblite <- function() new("MonetDBEmbeddedDriver")
-
 setMethod("dbIsValid", "MonetDBDriver", def=function(dbObj, ...) invisible(TRUE))
 
 setMethod("dbUnloadDriver", "MonetDBDriver", def=function(drv, ...) invisible(TRUE))
@@ -29,7 +27,7 @@ setMethod("dbConnect", "MonetDBDriver", def=function(drv, dbname="demo", user="m
                                                      password="monetdb", host="localhost", port=50000L, timeout=86400L, wait=FALSE, language="sql", embedded=FALSE,
                                                      ..., url="") {
   
-  if (substring(url, 1, 10) == "monetdb://" || substring(url, 1, 12) == "monetdblite:") {
+  if (substring(url, 1, 10) == "monetdb://") {
     dbname <- url
   }
   timeout <- as.integer(timeout)
@@ -67,11 +65,6 @@ setMethod("dbConnect", "MonetDBDriver", def=function(drv, dbname="demo", user="m
   # validate port number
   if (length(port) != 1 || port < 1 || port > 65535) {
     stop("Illegal port number ",port)
-  }
-
-  # support monetdblite:/db/dir urls to fool sqlsurvey
-  if (substring(dbname, 1, 12) == "monetdblite:") {
-    embedded <- substring(dbname, 13, nchar(dbname))
   }
 
   if (inherits(drv, "MonetDBEmbeddedDriver")) {
