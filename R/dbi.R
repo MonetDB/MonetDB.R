@@ -25,20 +25,6 @@ setMethod("dbGetInfo", "MonetDBDriver", def=function(dbObj, ...)
        max.connections=125) # R can only handle 128 connections, three of which are pre-allocated
 )
 
-# shorthand for connecting to the DB, very handy, e.g. dbListTables(mc("acs"))
-mc <- function(dbname="demo", user="monetdb", password="monetdb", host="localhost", port=50000L, 
-               timeout=86400L, wait=FALSE, language="sql", ...) {
-  
-  dbConnect(MonetDB.R(), dbname, user, password, host, port, timeout, wait, language, ...)
-}
-
-mq <- function(dbname, query, ...) {
-  conn <- mc(dbname, ...)
-  res <- dbGetQuery(conn, query)
-  dbDisconnect(conn)
-  return(res)
-}
-
 setMethod("dbConnect", "MonetDBDriver", def=function(drv, dbname="demo", user="monetdb", 
                                                      password="monetdb", host="localhost", port=50000L, timeout=86400L, wait=FALSE, language="sql", embedded=FALSE,
                                                      ..., url="") {
