@@ -29,8 +29,8 @@ This packages provides man pages with explanation and examples of various functi
 They can be accessed from the shell:
 
 ```r
-help('control')
+help('MonetDB.R')
 # or:
-?control
+?MonetDB.R
 ```
 
