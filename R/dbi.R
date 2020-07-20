@@ -390,39 +390,24 @@ setMethod("dbWriteTable", signature(conn="MonetDBConnection", name = "character"
     for (c in names(classes[classes=="factor"])) {
       levels(value[[c]]) <- enc2utf8(levels(value[[c]]))
     }
-    if (inherits(conn, "MonetDBEmbeddedConnection")) {
-      if (csvdump) {
-        warning("Ignoring csvdump setting in embedded mode")
-      }
-      # convert Date cols to characters
-      # TODO: use type mapping to select correct converters
-      for (c in names(classes[classes=="Date"])) {
-        value[[c]] <- as.character(value[[c]])
-      }
-
-      insres <- MonetDBLite::monetdb_embedded_append(conn@connenv$conn, qname, value)
-      if (!is.logical(insres)) {
-        stop("Failed to insert data: ", insres)
-      }
+  else {
+    if (csvdump) {
+      tmp <- tempfile(fileext = ".csv")
+      write.table(value, tmp, sep = ",", quote = TRUE, row.names = FALSE, col.names = FALSE, na="", fileEncoding = "UTF-8")
+      dbSendQuery(conn, paste0("COPY INTO ", qname, " FROM '", tmp, "' USING DELIMITERS ',','\\n','\"' NULL AS ''"))
+      file.remove(tmp) 
+    } else {
+      vins <- paste("(", paste(rep("?", length(value)), collapse=', '), ")", sep='')
+      # chunk some inserts together so we do not need to do a round trip for every one
+      splitlen <- 0:(nrow(value)-1) %/% getOption("monetdb.insert.splitsize", 1000)
+      lapply(split(value, splitlen), 
+        function(valueck) {
+        bvins <- c()
+        for (j in 1:length(valueck[[1]])) bvins <- c(bvins,.bindParameters(vins, as.list(valueck[j, ])))
+        dbSendUpdate(conn, paste0("INSERT INTO ", qname, " VALUES ",paste0(bvins, collapse=", ")))
+      })
     }
-    else {
-      if (csvdump) {
-        tmp <- tempfile(fileext = ".csv")
-        write.table(value, tmp, sep = ",", quote = TRUE, row.names = FALSE, col.names = FALSE, na="", fileEncoding = "UTF-8")
-        dbSendQuery(conn, paste0("COPY INTO ", qname, " FROM '", tmp, "' USING DELIMITERS ',','\\n','\"' NULL AS ''"))
-        file.remove(tmp) 
-      } else {
-        vins <- paste("(", paste(rep("?", length(value)), collapse=', '), ")", sep='')
-        # chunk some inserts together so we do not need to do a round trip for every one
-        splitlen <- 0:(nrow(value)-1) %/% getOption("monetdb.insert.splitsize", 1000)
-        lapply(split(value, splitlen), 
-          function(valueck) {
-          bvins <- c()
-          for (j in 1:length(valueck[[1]])) bvins <- c(bvins,.bindParameters(vins, as.list(valueck[j, ])))
-          dbSendUpdate(conn, paste0("INSERT INTO ", qname, " VALUES ",paste0(bvins, collapse=", ")))
-        })
-      }
-    }
+  }
   }
   if (transaction) {
     dbCommit(conn)
