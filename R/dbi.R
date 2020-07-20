@@ -667,7 +667,7 @@ setMethod("isIdCurrent", signature(dbObj="MonetDBConnection"), def=function(dbOb
 
 if (is.null(getGeneric("initExtension"))) setGeneric("initExtension", function(dbObj, ...) standardGeneric("initExtension"))
 setMethod("initExtension", signature(dbObj="MonetDBConnection"), def=function(dbObj, ...) {
-  .Deprecated(msg="initExtension() is not required for MonetDBLite")
+  .Deprecated(msg="initExtension() is not required for MonetDB")
 })
 
 
