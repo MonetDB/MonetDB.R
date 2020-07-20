@@ -6,7 +6,6 @@ C_LIBRARY <- "MonetDB.R"
 
 ### MonetDBDriver
 setClass("MonetDBDriver", representation("DBIDriver"))
-setClass("MonetDBEmbeddedDriver", representation("MonetDBDriver"))
 
 # allow instantiation of this driver with MonetDB to allow existing programs to work
 MonetR <- MonetDB <- MonetDBR <- MonetDB.R <- function() new("MonetDBDriver")
@@ -24,7 +23,7 @@ setMethod("dbGetInfo", "MonetDBDriver", def=function(dbObj, ...)
 )
 
 setMethod("dbConnect", "MonetDBDriver", def=function(drv, dbname="demo", user="monetdb", 
-                                                     password="monetdb", host="localhost", port=50000L, timeout=86400L, wait=FALSE, language="sql", embedded=FALSE,
+                                                     password="monetdb", host="localhost", port=50000L, timeout=86400L, wait=FALSE, language="sql", 
                                                      ..., url="") {
   
   if (substring(url, 1, 10) == "monetdb://") {
@@ -65,11 +64,6 @@ setMethod("dbConnect", "MonetDBDriver", def=function(drv, dbname="demo", user="m
   # validate port number
   if (length(port) != 1 || port < 1 || port > 65535) {
     stop("Illegal port number ",port)
-  }
-
-  if (inherits(drv, "MonetDBEmbeddedDriver")) {
-    if (missing(dbname)) embedded <- tempdir()
-    else embedded <- dbname
   }
 
   if (getOption("monetdb.debug.mapi", F)) message("II: Connecting to MonetDB on host ", host, " at "
@@ -120,9 +114,6 @@ valueClass="MonetDBConnection")
 
 ### MonetDBConnection
 setClass("MonetDBConnection", representation("DBIConnection", connenv="environment"))
-
-setClass("MonetDBEmbeddedConnection", representation("MonetDBConnection", connenv="environment"))
-
 
 setMethod("dbGetInfo", "MonetDBConnection", def=function(dbObj, ...) {
   envdata <- dbGetQuery(dbObj, "SELECT name, value from sys.env()")
@@ -502,8 +493,6 @@ setMethod("dbSendUpdateAsync", signature(conn="MonetDBConnection", statement="ch
 
 ### MonetDBResult
 setClass("MonetDBResult", representation("DBIResult", env="environment"))
-setClass("MonetDBEmbeddedResult", representation("MonetDBResult", env="environment"))
-
 
 .CT_INT <- 0L
 .CT_NUM <- 1L
