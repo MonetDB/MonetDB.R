@@ -645,37 +645,6 @@ setMethod("dbFetch", signature(res="MonetDBResult", n="numeric"), def=function(r
   df
 })
 
-# most of the heavy lifting here
-setMethod("dbFetch", signature(res="MonetDBEmbeddedResult", n="numeric"), def=function(res, n, ...) {
-  if (!res@env$success) {
-    stop("Cannot fetch results from error response, error was ", res@env$info$message)
-  }
-  if (!dbIsValid(res)) {
-    stop("Cannot fetch results from closed response.")
-  }
-  if (n == 0) {
-    stop("Fetch 0 rows? Really?")
-  }
-  if (res@env$info$type == Q_UPDATE) { 
-    return(data.frame())
-  }
-  if (res@env$delivered < 0) {
-    res@env$delivered <- 0
-  }
-  if (res@env$delivered >= res@env$info$rows) {
-    return(res@env$resp$tuples[F,, drop=F])
-  }
-  if (n > -1) {
-    n <- min(n, res@env$info$rows - res@env$delivered)
-    res@env$delivered <- res@env$delivered + n
-    return(res@env$resp$tuples[(res@env$delivered - n + 1):(res@env$delivered),, drop=F])
-  }
-  else {
-    res@env$delivered <- res@env$info$rows
-    return(res@env$resp$tuples)
-  }
-})
-
 setMethod("dbClearResult", "MonetDBResult", def = function(res, ...) {
   if (res@env$info$type == Q_TABLE) {
     resid <- res@env$info$id
@@ -683,13 +652,6 @@ setMethod("dbClearResult", "MonetDBResult", def = function(res, ...) {
       .mapiRequest(res@env$conn, paste0("Xclose ", resid), async=TRUE)
       res@env$open <- FALSE
     }
-  }
-  return(invisible(TRUE))
-}, valueClass = "logical")
-
-setMethod("dbClearResult", "MonetDBEmbeddedResult", def = function(res, ...) {
-  if (res@env$info$type == Q_TABLE) {
-    res@env$open <- FALSE
   }
   return(invisible(TRUE))
 }, valueClass = "logical")
@@ -730,12 +692,6 @@ setMethod("dbColumnInfo", "MonetDBResult", def = function(res, ...) {
   data.frame(field.name=res@env$info$names, field.type=res@env$info$types, 
                     data.type=monetTypes[res@env$info$types], r.data.type=monetTypes[res@env$info$types], 
                     monetdb.data.type=res@env$info$types, stringsAsFactors=F)	
-}, 
-valueClass = "data.frame")
-
-setMethod("dbColumnInfo", "MonetDBEmbeddedResult", def = function(res, ...) {
-  data.frame(field.name=res@env$info$names, stringsAsFactors=F)  
-  # TODO: also export SQL types? Do we need this?
 }, 
 valueClass = "data.frame")
 
