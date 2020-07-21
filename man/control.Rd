@@ -43,8 +43,8 @@ monetdb.server.shutdown(con)
 
 \examples{
 \dontrun{
-startscript <- monetdb.server.setup("/tmp/database","/usr/local/monetdb/", "db1", 50001)
-pid <- monetdb.server.start(startscript)
-monetdb.server.stop(pid)
+script <- MonetDB.R::monetdb.server.setup(database.directory="/tmp/database", dbname="db1", dbport=50001)
+pid <- MonetDB.R::monetdb.server.start(script)
+MonetDB.R::monetdb.server.stop(pid)
 conn <- dbConnect(MonetDB.R(), "monetdb://localhost:50001/db1")
 }}
