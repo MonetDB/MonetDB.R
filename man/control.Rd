@@ -45,6 +45,6 @@ monetdb.server.shutdown(con)
 \dontrun{
 script <- MonetDB.R::monetdb.server.setup(database.directory="/tmp/database", dbname="db1", dbport=50001)
 pid <- MonetDB.R::monetdb.server.start(script)
+conn <- dbConnect(MonetDB.R::MonetDB(), "monetdb://localhost:50001/db1")
 MonetDB.R::monetdb.server.stop(pid)
-conn <- dbConnect(MonetDB.R(), "monetdb://localhost:50001/db1")
 }}
