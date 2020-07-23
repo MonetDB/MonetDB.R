@@ -7,6 +7,7 @@ test_that("we can start and stop a monetdbserver from R", {
     
     # check if we can create a creation script
     script <- MonetDB.R::monetdb.server.setup(database.directory=datadir, dbname="db1", dbport=50001)
+    expect_equal(script, '/tmp/unit-test_database/db1.sh')
 
     # check if the script got an integer assigned as PID.
     # that way we know that monetdb actually started.
