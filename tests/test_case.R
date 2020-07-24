@@ -23,7 +23,19 @@ test_that("we can manipulate tables in the database", {
     dbRemoveTable(conn, "mtcars")
     output <- dbListTables(conn) 
     expect_error(grepl(output, "mtcars"))
+})
 
+test_that("we can rollback a transaction", {
+
+    dbBegin(conn)
+
+    # we need to disable transaction here,
+    # because it doesn't support nested transactions
+    dbWriteTable(conn, "mtcars", mtcars[1:5,], transaction=F, overwrite=T)
+    dbRollback(conn)
+
+    output <- dbListTables(conn)
+    expect_error(grepl(str(output), "mtcars"))
 })
 
 # Checks if we can disconnect
@@ -32,14 +44,6 @@ test_that("we can disconnect", {
     dbDisconnect(conn)
 
     # Check if we can query the database.
+    # sidenote: you can also use `dbReadTable` for this.
     expect_error(dbGetQuery(conn, "select tables.name from tables where system.tables=false;") , 'invalid connection') 
-})
-
-
-skip("There is still a bug with the auto-commit.")
-test_that("we can rollback a transaction", {
-
-    dbWriteTable(conn, "mtcars", mtcars[1:5,])
-    dbRollback(conn)
-
 })
