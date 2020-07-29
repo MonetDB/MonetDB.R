@@ -462,11 +462,11 @@ setMethod("dbSendUpdateAsync", signature(conn="MonetDBConnection", statement="ch
   for (i in 1:length(param)) {
     value <- param[[i]]
     valueClass <- class(value)
-    if (is.na(value)) 
+    if (isTRUE(is.na(value)))
       statement <- sub("?", "NULL", statement, fixed=TRUE)
-    else if (valueClass %in% c("numeric", "logical", "integer"))
+    else if (isTRUE(valueClass %in% c("numeric", "logical", "integer") && isTRUE(value != NULL)))
       statement <- sub("?", value, statement, fixed=TRUE)
-    else if (valueClass == c("raw"))
+    else if (isTRUE(valueClass == c("raw")))
       stop("raw() data is so far only supported when reading from BLOBs")
     else
       statement <- sub("?", paste("'", .mapiQuote(toString(value)), "'", sep=""), statement, 
@@ -710,6 +710,7 @@ monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TR
   if (!missing(sep)) delim <- sep
 
   headers <- lapply(files, utils::read.csv, sep=delim, na.strings=na.strings, quote=quote, nrows=nrow.check, header=header, ...)
+
   if (length(files)>1){
     nn <- sapply(headers, ncol)
     if (!all(nn==nn[1])) stop("Files have different numbers of columns")
@@ -718,34 +719,46 @@ monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TR
     types <- sapply(headers, function(df) sapply(df, dbDataType, dbObj=conn))
     if(!all(types==types[, 1])) stop("Files have different variable types")
   } 
+
   dbBegin(conn)
   on.exit(tryCatch(dbRollback(conn), error=function(e){}))
-  if (create) {
-  tablename <- quoteIfNeeded(conn, tablename)
-    if(lower.case.names) names(headers[[1]]) <- tolower(names(headers[[1]]))
-    if(!is.null(col.names)) {
-      if (lower.case.names) {
-        warning("Ignoring lower.case.names parameter as overriding col.names are supplied.")
+
+  # Create the table.
+  if (create) 
+  {
+      tablename <- quoteIfNeeded(conn, tablename)
+
+      if(lower.case.names) 
+      {
+        names(headers[[1]]) <- tolower(names(headers[[1]]))
       }
-      col.names <- as.character(col.names)
-      if (length(unique(col.names)) != length(names(headers[[1]]))) {
-        stop("You supplied ", length(unique(col.names)), " unique column names, but file has ", 
-          length(names(headers[[1]])), " columns.")
+
+      if(!is.null(col.names)) 
+      {
+          if (lower.case.names) {
+            warning("Ignoring lower.case.names parameter as overriding col.names are supplied.")
+          }
+
+          col.names <- as.character(col.names)
+          if (length(unique(col.names)) != length(names(headers[[1]]))) {
+            stop("You supplied ", length(unique(col.names)), " unique column names, but file has ", 
+              length(names(headers[[1]])), " columns.")
+          }
+
+          names(headers[[1]]) <- quoteIfNeeded(conn, col.names)
       }
-      names(headers[[1]]) <- quoteIfNeeded(conn, col.names)
-    }
-    dbWriteTable(conn, tablename, headers[[1]][FALSE, ], transaction=F)
+
+      # Create the table with the specified headers
+      #dbCreateTable(conn, tablename, strsplit(names(headers[[1]]), " "))
+      #dbWriteTable(conn, tablename, headers[[1]][FALSE, ], transaction=F)
   }
   
   delimspec <- paste0("USING DELIMITERS '", delim, "','", newline, "','", quote, "'")
   
   for(i in seq_along(files)) {
-    thefile <- normalizePath(files[i])
-    dbSendUpdate(conn, paste("COPY", if(header) "OFFSET 2", "INTO", 
-      tablename, "FROM", paste("'", thefile, "'", sep=""), delimspec, "NULL as", paste("'", 
-      na.strings[1], "'", sep=""), if(locked) "LOCKED", if(best.effort) "BEST EFFORT"))
+    dbSendQuery(conn, paste0("COPY OFFSET 2 INTO ", tablename, " FROM '", files[i], "' DELIMITERS '", delim, "';"))
   }
-  dbGetQuery(conn, paste("SELECT COUNT(*) FROM", tablename))[[1]]
+
   dbCommit(conn)
   on.exit(NULL)
 }
