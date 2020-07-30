@@ -752,12 +752,25 @@ monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TR
       #dbCreateTable(conn, tablename, strsplit(names(headers[[1]]), " "))
       #dbWriteTable(conn, tablename, headers[[1]][FALSE, ], transaction=F)
   }
-  
+
   delimspec <- paste0("USING DELIMITERS '", delim, "','", newline, "','", quote, "'")
-  
+
+  query <- paste0("COPY OFFSET 2 INTO ", tablename, " FROM ")
+
+
+  # Loop for multi file support.
   for(i in seq_along(files)) {
-    dbSendQuery(conn, paste0("COPY OFFSET 2 INTO ", tablename, " FROM '", files[i], "' DELIMITERS '", delim, "';"))
+      query <- paste0(query, "'", files[i], "'")
+
+      if(i >= length(files)) {
+        break
+      }
+
+      query <- paste0(query, ",")
   }
+
+  query <- paste0(query, " DELIMITERS '", delim, "';")
+  dbExecute(conn, query)
 
   dbCommit(conn)
   on.exit(NULL)
