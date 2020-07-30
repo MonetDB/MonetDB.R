@@ -769,7 +769,7 @@ monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TR
       query <- paste0(query, ",")
   }
 
-  query <- paste0(query, " DELIMITERS '", delim, "';")
+  query <- paste0(query, " ON CLIENT DELIMITERS '", delim, "';")
   dbSendQuery(conn, query)
 
   dbCommit(conn)
