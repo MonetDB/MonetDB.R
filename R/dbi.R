@@ -709,48 +709,17 @@ monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TR
   if (length(na.strings)>1) stop("na.strings must be of length 1")
   if (!missing(sep)) delim <- sep
 
-  headers <- lapply(files, utils::read.csv, sep=delim, na.strings=na.strings, quote=quote, nrows=nrow.check, header=header, ...)
-
-  if (length(files)>1){
-    nn <- sapply(headers, ncol)
-    if (!all(nn==nn[1])) stop("Files have different numbers of columns")
-    nms <- sapply(headers, names)
-    if(!all(nms==nms[, 1])) stop("Files have different variable names")
-    types <- sapply(headers, function(df) sapply(df, dbDataType, dbObj=conn))
-    if(!all(types==types[, 1])) stop("Files have different variable types")
-  } 
-
   dbBegin(conn)
   on.exit(tryCatch(dbRollback(conn), error=function(e){}))
 
   # Create the table.
-  if (create) 
-  {
-      tablename <- quoteIfNeeded(conn, tablename)
-
-      if(lower.case.names) 
-      {
-        names(headers[[1]]) <- tolower(names(headers[[1]]))
+  if (create) {
+      if(length(files) > 1) {
+        dbCreateTable(conn, tablename, read.csv(files[1], header=header, sep=delim))
       }
-
-      if(!is.null(col.names)) 
-      {
-          if (lower.case.names) {
-            warning("Ignoring lower.case.names parameter as overriding col.names are supplied.")
-          }
-
-          col.names <- as.character(col.names)
-          if (length(unique(col.names)) != length(names(headers[[1]]))) {
-            stop("You supplied ", length(unique(col.names)), " unique column names, but file has ", 
-              length(names(headers[[1]])), " columns.")
-          }
-
-          names(headers[[1]]) <- quoteIfNeeded(conn, col.names)
+      else {
+        dbCreateTable(conn, tablename, read.csv(files, header=header, sep=delim))
       }
-
-      # Create the table with the specified headers
-      #dbCreateTable(conn, tablename, strsplit(names(headers[[1]]), " "))
-      #dbWriteTable(conn, tablename, headers[[1]][FALSE, ], transaction=F)
   }
 
   delimspec <- paste0("USING DELIMITERS '", delim, "','", newline, "','", quote, "'")
@@ -769,7 +738,7 @@ monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TR
       query <- paste0(query, ",")
   }
 
-  query <- paste0(query, " ON CLIENT DELIMITERS '", delim, "';")
+  query <- paste0(query, " DELIMITERS '", delim, "';")
   dbSendQuery(conn, query)
 
   dbCommit(conn)
