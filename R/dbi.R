@@ -702,7 +702,7 @@ valueClass = "numeric")
 
 # adapted from RMonetDB, no java-specific things in here...
 monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TRUE, 
-                                               locked=FALSE, best.effort=FALSE, 
+                                               best.effort=FALSE,
                                                delim=",", newline="\\n", quote="\"", create=TRUE, 
                                                col.names=NULL, lower.case.names=FALSE, sep=delim, ...){
   
@@ -734,7 +734,7 @@ monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TR
       query <- paste0(query, ",")
   }
 
-  query <- paste0(query, " DELIMITERS '", delim, "'", if(locked) " LOCKED ", if(best.effort) " BEST EFFORT", ";")
+  query <- paste0(query, " DELIMITERS '", delim, "'", if(best.effort) " BEST EFFORT", ";")
   dbSendQuery(conn, query)
 
   dbCommit(conn)
