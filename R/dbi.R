@@ -702,11 +702,10 @@ valueClass = "numeric")
 
 # adapted from RMonetDB, no java-specific things in here...
 monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TRUE, 
-                                               locked=FALSE, best.effort=FALSE, na.strings="", 
+                                               locked=FALSE, best.effort=FALSE, 
                                                delim=",", newline="\\n", quote="\"", create=TRUE, 
                                                col.names=NULL, lower.case.names=FALSE, sep=delim, ...){
   
-  if (length(na.strings)>1) stop("na.strings must be of length 1")
   if (!missing(sep)) delim <- sep
 
   dbBegin(conn)
