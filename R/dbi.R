@@ -722,10 +722,7 @@ monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TR
       }
   }
 
-  delimspec <- paste0("USING DELIMITERS '", delim, "','", newline, "','", quote, "'")
-
   query <- paste0("COPY OFFSET 2 INTO ", tablename, " FROM ")
-
 
   # Loop for multi file support.
   for(i in seq_along(files)) {
