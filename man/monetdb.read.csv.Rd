@@ -20,11 +20,8 @@
   \item{files}{A single string or a vector of strings containing the absolute file names of the CSV files to be imported.}
   \item{tablename}{Name of the database table the CSV files should be imported in. Created if necessary.}
   \item{header}{Whether or not the CSV files contain a header line.}
-  \item{locked}{Whether or not to disable transactions for import. 
   Setting this to TRUE can greatly improve the import performance.}
   \item{best.effort}{Use best effort flag when reading csv files and continue importing even if parsing of fields/lines fails.}
-  \item{na.strings}{Which string value to interpret as \code{NA} value.}
-  \item{nrow.check}{Amount of rows that should be read from the CSV when the 
   table is being created to determine column types.}
   \item{delim}{Field separator in CSV file.}
   \item{newline}{Newline in CSV file, usually \\n for UNIX-like systems and \\r\\r on Windows.}
