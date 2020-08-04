@@ -702,7 +702,7 @@ valueClass = "numeric")
 
 # adapted from RMonetDB, no java-specific things in here...
 monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TRUE, 
-                                               locked=FALSE, best.effort=FALSE, na.strings="", nrow.check=500, 
+                                               locked=FALSE, best.effort=FALSE, na.strings="", 
                                                delim=",", newline="\\n", quote="\"", create=TRUE, 
                                                col.names=NULL, lower.case.names=FALSE, sep=delim, ...){
   
