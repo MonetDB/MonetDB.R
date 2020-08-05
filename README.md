@@ -11,7 +11,7 @@ The DBI library is used for basic database manipulation.
 ## Usage
 First we need to define a connection:
 ```r
-conn = dbConnect(MonetDB.R::MonetDB(), '<database-name>')
+conn = DBI::dbConnect(MonetDB.R::MonetDB(), '<database-name>')
 ```
 
 If the `<database-name>` argument is omitted, it will default to the 'demo' database.
