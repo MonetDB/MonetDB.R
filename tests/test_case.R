@@ -59,13 +59,3 @@ test_that("we can disconnect", {
     # sidenote: you can also use `dbReadTable` for this.
     expect_error(dbGetQuery(conn, "select tables.name from tables where system.tables=false;") , 'invalid connection') 
 })
-
-# Check if we can shutdown a server 
-# with the shutdown command, since server.stop() is actually deprecated.
-test_that("we can shutdown a server", {
-
-    conn <- dbConnect(MonetDB.R::MonetDB(), "demo")
-
-    MonetDB.R::monetdb.server.shutdown(conn)
-    expect_error(dbGetQuery(conn, "select 1"))
-})
