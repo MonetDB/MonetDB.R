@@ -20,9 +20,7 @@
   \item{files}{A single string or a vector of strings containing the absolute file names of the CSV files to be imported.}
   \item{tablename}{Name of the database table the CSV files should be imported in. Created if necessary.}
   \item{header}{Whether or not the CSV files contain a header line.}
-  Setting this to TRUE can greatly improve the import performance.}
   \item{best.effort}{Use best effort flag when reading csv files and continue importing even if parsing of fields/lines fails.}
-  table is being created to determine column types.}
   \item{delim}{Field separator in CSV file.}
   \item{newline}{Newline in CSV file, usually \\n for UNIX-like systems and \\r\\r on Windows.}
   \item{quote}{Quote character(s) in CSV file.}
