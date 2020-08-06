@@ -8,15 +8,6 @@ exportMethods(dbSendUpdate,dbSendUpdateAsync,dbTransaction,mdbapply,isIdCurrent,
 # shorthands
 useDynLib(MonetDB.R)
 
-# control.R
-export(monetdb.server.setup)
-export(monetdb.server.start)
-export(monetdb.server.stop)
-export(monetdbd.liststatus)
-export(monetdb.liststatus)
-export(monetdb.server.shutdown)
-export(monetdb.server.getpid)
-
 # dplyr.R
 export(src_monetdb)
 # rest of dplyr.R exported via hack in src_monetdb

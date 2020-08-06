@@ -13,7 +13,7 @@ Description: Allows to pull data from MonetDB into R. Includes a DBI implementat
 License: MPL (== 2.0)
 URL: http://www.monetdb.org
 SystemRequirements: MonetDB, available from http://www.monetdb.org 
-Collate: mapi.R dbi.R dbapply.R dplyr.R control.R
+Collate: mapi.R dbi.R dbapply.R dplyr.R
 NeedsCompilation: yes
 Packaged: 2020-04-07 16:14:28 UTC; mitchell
 Repository: CRAN
