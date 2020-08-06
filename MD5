@@ -6,7 +6,6 @@
 b09e6113cf911895d5693e92ebb1d7b0 *R/dplyr.R
 167f074e615189f97958ba63a789402d *R/mapi.R
 65bde73490dc3cd0214e263bce9606d2 *man/MonetDB.R.Rd
-e1d8548cf4c139248e18659e861e5b83 *man/control.Rd
 166ff78af778a6e5455c739067c8d16e *man/dbApply.Rd
 46cc19ae2cdb0e10166ca93bb4af2e0c *man/dbSendUpdate.Rd
 6fdd2a2fe22b39129365e5f79612c2df *man/dbTransaction.Rd
