@@ -1,3 +1,5 @@
+library(DBI)
+library(testthat)
 conn <- dbConnect(MonetDB.R::MonetDB())
 
 # Checks if we can create a table,
@@ -13,4 +15,8 @@ test_that("we can manipulate tables in the database", {
     dbRemoveTable(conn, "mtcars")
     output <- dbListTables(conn) 
     expect_error(grepl(output, "mtcars"))
+})
+
+test_that("dbListFields returns the right amount of fields", {
+
 })

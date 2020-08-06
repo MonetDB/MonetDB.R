@@ -1,3 +1,6 @@
+library(DBI)
+library(testthat)
+
 conn <- dbConnect(MonetDB.R::MonetDB())
 
 # Check if we can start the database.
@@ -6,7 +9,6 @@ test_that("db starts", {
     expect_equal(dbIsValid(conn), TRUE)
     expect_that(conn, is_a("MonetDBConnection"))    
 })
-
 
  
 # Checks if we can disconnect

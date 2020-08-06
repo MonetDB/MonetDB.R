@@ -1,3 +1,6 @@
+library(DBI)
+library(testthat)
+
 conn <- dbConnect(MonetDB.R::MonetDB())
 
 test_that("we can commit a transaction", {
