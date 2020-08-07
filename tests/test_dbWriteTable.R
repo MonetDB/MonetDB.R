@@ -57,6 +57,19 @@ test_that("csv import works", {
     expect_false(dbExistsTable(conn, tname))
 })
 
+test_that("strings can have exotic characters", {
+    tname <- "monetdbtest"
+	skip_on_os("windows")
+	dbSendQuery(conn, "create table monetdbtest (a string)")
+	expect_true(dbExistsTable(conn, tname))
+	dbSendQuery(conn, "INSERT INTO monetdbtest VALUES ('Роман Mühleisen')")
+	expect_equal("Роман Mühleisen", dbGetQuery(conn,"SELECT a FROM monetdbtest")$a[[1]])
+	dbSendQuery(conn, "DELETE FROM monetdbtest")
+	MonetDB.R::dbSendUpdate(conn, "INSERT INTO monetdbtest (a) VALUES (?)", "Роман Mühleisen")
+	expect_equal("Роман Mühleisen", dbGetQuery(conn,"SELECT a FROM monetdbtest")$a[[1]])
+	dbRemoveTable(conn, tname)
+})
+
 test_that("we can create a temporary table, and that its actually temporary", {
     table_name <- "fooTempTable"
     dbCreateTable(conn, table_name, iris, temporary=T)
