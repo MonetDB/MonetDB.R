@@ -13,18 +13,31 @@ test_that("we can write a table to the database", {
 test_that("we can update a table", {
     MonetDB.R::dbSendUpdate(conn, "CREATE TABLE foo(a INT, b INT)")
     expect_equal(dbExistsTable(conn, "foo"), T)
+    dbRemoveTable(conn, "foo")
 })
 
 test_that("we can update a table async", {
-    MonetDB.R::dbSendUpdate(conn, "CREATE TABLE foo1(a INT, b INT)")
+    MonetDB.R::dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT, b INT)")
     expect_equal(dbExistsTable(conn, "foo"), T)
+    dbRemoveTable(conn, "foo")
 })
 
 test_that("we can drop a table", {
 
-    # assert we can drop a table
     dbRemoveTable(conn, "mtcars")
     expect_equal(dbExistsTable(conn, "mtcars"), F)
     dbRemoveTable(conn, "foo")
     dbRemoveTable(conn, "foo1")
+})
+
+
+test_that("we can create a temporary table", {
+    table_name <- "fooTempTable"
+    dbCreateTable(conn, table_name, iris, temporary=T)
+    expect_equal(dbExistsTable(conn, table_name), T)
+
+    dbDisconnect(conn)
+    conn <- dbConnect(MonetDB.R::MonetDB())
+
+    expect_equal(dbExistsTable(conn, table_name), F)
 })
