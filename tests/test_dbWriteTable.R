@@ -42,6 +42,20 @@ test_that("we can drop a table", {
     dbRemoveTable(conn, "foo1")
 })
 
+test_that("csv import works", {
+    tname <- "csvunittest"
+	tf <- tempfile()
+	write.table(iris, tf, sep=",", row.names=FALSE)
+	MonetDB.R::monetdb.read.csv(conn, tf, tname)
+	expect_true(dbExistsTable(conn, tname))
+
+	iris3 <- dbReadTable(conn, tname)
+	expect_equal(dim(iris), dim(iris3))
+	expect_equal(dbListFields(conn, tname), names(iris))
+
+	dbRemoveTable(conn, tname)
+    expect_false(dbExistsTable(conn, tname))
+})
 
 test_that("we can create a temporary table, and that its actually temporary", {
     table_name <- "fooTempTable"
