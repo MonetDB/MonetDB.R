@@ -24,6 +24,9 @@ library(testthat)
 testthat::test_dir('tests')
 ```
 
+Note: There could be an issue with the csv imports. The daemon has insufficient rights to
+read the generated csv file. To fix this, run mserver5 yourself.
+
 ## Man pages
 This packages provides man pages with explanation and examples of various functions.
 They can be accessed from the shell:

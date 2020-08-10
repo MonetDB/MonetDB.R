@@ -78,6 +78,16 @@ test_that("various parameters to dbWriteTable work as expected", {
 	dbRemoveTable(conn, tname)
 })
 
+test_that("dbWriteTable with csvdump works as expected", {
+    tname <- "monetdbtest"
+
+	dbWriteTable(conn, tname, mtcars, overwrite=T, csvdump=T)
+	expect_true(dbExistsTable(conn, tname))
+
+	dbRemoveTable(conn, tname)
+}) 
+
+
 test_that("we can drop a table", {
 
     dbRemoveTable(conn, "mtcars")
@@ -86,7 +96,6 @@ test_that("we can drop a table", {
     dbRemoveTable(conn, "foo1")
 })
 
-skip("should be activated once we get permissions sorted")
 test_that("csv import works", {
     tname <- "csvunittest"
 	tf <- tempfile()
