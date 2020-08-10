@@ -1,5 +1,4 @@
 library(DBI)
-library(testthat)
 
 conn <- dbConnect(MonetDB.R::MonetDB())
 
