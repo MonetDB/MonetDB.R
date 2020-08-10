@@ -84,6 +84,8 @@ test_that("dbWriteTable with csvdump works as expected", {
 	dbWriteTable(conn, tname, mtcars, overwrite=T, csvdump=T)
 	expect_true(dbExistsTable(conn, tname))
 
+    expect_equal(tsize(conn, tname), nrow(mtcars))
+
 	dbRemoveTable(conn, tname)
 }) 
 
