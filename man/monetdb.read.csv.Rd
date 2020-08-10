@@ -10,7 +10,7 @@
 }
 \usage{
    monetdb.read.csv (conn, files, tablename, header=TRUE, 
-  locked=FALSE, best.effort=FALSE, na.strings="", nrow.check=500, delim=",",
+   best.effort=FALSE, delim=",",
   newline = "\\\\n", quote = "\"", create=TRUE, col.names=NULL, lower.case.names=FALSE, 
   sep=delim, ...)
 }
