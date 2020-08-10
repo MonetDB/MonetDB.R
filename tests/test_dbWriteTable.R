@@ -1,7 +1,11 @@
 library(DBI)
 library(testthat)
 
+
 conn <- dbConnect(MonetDB.R::MonetDB())
+
+tsize <- function(conn, tname) 
+ 	as.integer(dbGetQuery(conn, paste0("SELECT COUNT(*) FROM ", tname))[[1]])
 
 test_that("we can write a table to the database", {
 
@@ -32,6 +36,46 @@ test_that("we can update a table async", {
     MonetDB.R::dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT, b INT)")
     expect_equal(dbExistsTable(conn, "foo"), T)
     dbRemoveTable(conn, "foo")
+})
+
+test_that("transactions are on ACID", {
+    tname <- "monetdbtest"
+	dbSendQuery(conn, "create table monetdbtest (a integer)")
+	expect_true(dbExistsTable(conn, tname))
+	dbBegin(conn)
+	dbSendQuery(conn, "INSERT INTO monetdbtest VALUES (42)")
+	expect_equal(tsize(conn, tname), 1)
+	dbRollback(conn)
+	expect_equal(tsize(conn, tname), 0)
+	dbBegin(conn)
+	dbSendQuery(conn, "INSERT INTO monetdbtest VALUES (42)")
+	expect_equal(tsize(conn, tname), 1)
+	dbCommit(conn)
+	expect_equal(tsize(conn, tname), 1)
+
+	dbRemoveTable(conn, tname)
+})
+
+test_that("various parameters to dbWriteTable work as expected", {
+    tname <- "monetdbtest"
+	dbWriteTable(conn, tname, mtcars, append=F, overwrite=F)
+	expect_true(dbExistsTable(conn, tname))
+
+	expect_equal(tsize(conn, tname), nrow(mtcars))
+	expect_error(dbWriteTable(conn, tname, mtcars, append=F, overwrite=F))
+	expect_error(dbWriteTable(conn, tname, mtcars, overwrite=T, append=T))
+
+	dbWriteTable(conn, tname, mtcars, append=F, overwrite=T)
+	expect_true(dbExistsTable(conn, tname))
+	expect_equal(tsize(conn, tname), nrow(mtcars))
+
+	dbWriteTable(conn, tname, mtcars, append=T, overwrite=F)
+	expect_equal(tsize(conn, tname), nrow(mtcars) * 2)
+
+	dbRemoveTable(conn, tname)
+	dbWriteTable(conn, tname, mtcars, append=F, overwrite=F, insert=T)
+	expect_equal(tsize(conn, tname), nrow(mtcars))
+	dbRemoveTable(conn, tname)
 })
 
 test_that("we can drop a table", {
