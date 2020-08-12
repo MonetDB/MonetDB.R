@@ -27,6 +27,9 @@ testthat::test_dir('tests')
 Note: There could be an issue with the csv imports. The daemon has insufficient rights to
 read the generated csv file. To fix this, run mserver5 yourself.
 
+Note: The tests will not run if the NOT_CRAN system variable is not set to "true".
+
+
 ## Man pages
 This packages provides man pages with explanation and examples of various functions.
 They can be accessed from the shell:
