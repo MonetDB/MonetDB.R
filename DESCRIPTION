@@ -1,19 +1,18 @@
 Package: MonetDB.R
-Version: 1.0.2
+Version: 2.0.0
 Title: Connect MonetDB to R
-Authors@R: c(person("Hannes Muehleisen", role = c("aut", "cre"),email = "hannes@cwi.nl"),
+Authors@R: c(person("Mitchell Weggemans", role = c("aut", "cre"),email = "mitchell.weggemans@monetdbsolutions.com"),
+	person("Hannes Muehleisen", role = "aut"),
 	person("Anthony Damico", role = "aut"),
-	person("Mitchell Weggemans", role = "aut"),
 	person("Thomas Lumley", role = "ctb"))
-Author: Hannes Muehleisen [aut, cre], Anthony Damico [aut], Mitchell Weggemans [aut], Thomas Lumley [ctb]
+Author: Mitchell Weggemans [aut, cre], Hannes Muehleisen [aut], Anthony Damico [aut], Thomas Lumley [ctb]
 Maintainer: Mitchell Weggemans <mitchell.weggemans@monetdbsolutions.com>
 Imports: DBI (>= 0.3.1), digest (>= 0.6.4), testthat, methods, codetools
-Enhances: dplyr (>= 0.3.0) 
-Description: Allows to pull data from MonetDB into R. Includes a DBI implementation and a dplyr backend.
+Description: Allows to pull data from MonetDB into R. 
 License: MPL (== 2.0)
 URL: http://www.monetdb.org
 SystemRequirements: MonetDB, available from http://www.monetdb.org 
-Collate: mapi.R dbi.R dbapply.R dplyr.R
+Collate: mapi.R dbi.R 
 NeedsCompilation: yes
 Packaged: 2020-04-07 16:14:28 UTC; mitchell
 Repository: CRAN
