@@ -1,13 +1,9 @@
-import(DBI,digest,methods,codetools,utils)
+import(DBI, digest,methods,codetools,utils)
 
 # export only driver constructor, everything else is DBI stuff..
 export(MonetDB,MonetR,MonetDBR,MonetDB.R)
 export(monet.read.csv,monetdb.read.csv)
 # those are not in the DBI
-exportMethods(dbSendUpdate,dbSendUpdateAsync,dbTransaction,mdbapply,isIdCurrent,initExtension)
+exportMethods(dbSendUpdate,dbSendUpdateAsync,dbTransaction,isIdCurrent,initExtension)
 # shorthands
-useDynLib(MonetDB.R)
-
-# dplyr.R
-export(src_monetdb)
-# rest of dplyr.R exported via hack in src_monetdb
+useDynLib(MonetDB.R, .registration = TRUE)
