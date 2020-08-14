@@ -1,7 +1,12 @@
 # R connector for MonetDB.
 
 ## Installation
-Installation can be done through source:
+Installation can be done through CRAN:
+```r
+install.packages('MonetDB.R')
+```
+
+or through source:
 
 ```r
 install.packages('/path/to/tar.gz', repos=NULL, type='source')
