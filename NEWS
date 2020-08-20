@@ -1,4 +1,8 @@
-1.0.2
+2.0.1
+- Improved documentation
+- Some code clean up
+2.0.0
+- Extractes MonetDB.R related files from https://github.com/MonetDB/MonetDBLite-R into this new repository for its continued development and maintenance
 - reduced MAX_PACKET_SIZE to 8100, which seems to be a safe value to avoid sending unfinished packages to the MonetDB server.
 1.0.1
 - added isIdCurrent for improved compatibility with RSQLite
