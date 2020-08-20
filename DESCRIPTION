@@ -1,18 +1,19 @@
 Package: MonetDB.R
-Version: 2.0.1
 Title: R DBI interface to MonetDB
-Authors@R: c(person("Mitchell Weggemans", role = c("aut", "cre"),email = "mitchell.weggemans@monetdbsolutions.com"),
+Version: 2.0.1
+Authors@R: c(
+	person("Mitchell Weggemans", role = c("aut", "cre"),email = "mitchell.weggemans@monetdbsolutions.com"),
 	person("Hannes Muehleisen", role = "aut"),
 	person("Anthony Damico", role = "aut"),
 	person("Thomas Lumley", role = "ctb"),
 	person("MonetDB developers team", role = "ctb"))
-Author: Mitchell Weggemans [aut, cre], Hannes Muehleisen [aut], Anthony Damico [aut], Thomas Lumley [ctb], MonetDB developers team [ctb]
 Maintainer: Mitchell Weggemans <mitchell.weggemans@monetdbsolutions.com>
 Imports: DBI (>= 0.3.1), digest (>= 0.6.4), testthat, methods, codetools
 Description: a DBI-compliant R interface to MonetDB
 License: MPL (== 2.0)
 URL: https://github.com/MonetDB/monetdb-r
-SystemRequirements: MonetDB Jun2020 or newer, available from http://www.monetdb.org 
+BugReports: https://github.com/MonetDB/monetdb-r/issues
+SystemRequirements: MonetDB (>= Jun2020), available from http://www.monetdb.org 
 Collate: mapi.R dbi.R 
 NeedsCompilation: yes
 Packaged: 2020-04-07 16:14:28 UTC; mitchell
