@@ -5,14 +5,11 @@ MonetDB.R is an [DBI](https://cran.r-project.org/web/packages/DBI/index.html)-co
 NB: MonetDB.R version >=2.0.0 only works with MonetDB Jun2020 release or newer. For older MonetDB versions, please use MonetDB.R version 1.*.
 
 ## Installation
-Install the latest MonetDB.R release from CRAN:
 ```r
+# Install the latest MonetDB.R release from CRAN:
 install.packages('MonetDB.R')
-```
 
-or from a source package:
-
-```r
+#or from a source package:
 install.packages('/path/to/MonetDB.R.tar.gz', repos=NULL, type='source')
 ```
 
@@ -94,7 +91,7 @@ devtools::check()
 # Only run the unit tests:
 testthat::test_dir('tests/testthat')
 ```
-Note: The tests will not run if the NOT_CRAN system variable is not set to "true".
+Note: The tests will not run if the NOT_CRAN system variable is not set to "true", which is done by ``tests/testthat.R``.
 
 ## Acknowledgements
 This Source Code Form is subject to the terms of the Mozilla Public License, v.
