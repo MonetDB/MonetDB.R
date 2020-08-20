@@ -1,41 +1,66 @@
-# R connector for MonetDB.
+# A DBI-compliant R interface to MonetDB
+
+MonetDB.R is an [DBI](https://cran.r-project.org/web/packages/DBI/index.html)-compliant interface to the open-source [MonetDB](https://www.monetdb.org) database.  It also comes with several MonetDB specific functions (see "MonetDB extensions" below).
+
+NB: MonetDB.R version >=2.0.0 only works with MonetDB Jun2020 release or newer. For older MonetDB versions, please use MonetDB.R version 1.*.
 
 ## Installation
-Installation can be done through CRAN:
+Install the latest MonetDB.R release from CRAN:
 ```r
 install.packages('MonetDB.R')
 ```
 
-or through source:
+or from a source package:
 
 ```r
-install.packages('/path/to/tar.gz', repos=NULL, type='source')
+install.packages('/path/to/MonetDB.R.tar.gz', repos=NULL, type='source')
 ```
-The DBI library is used for basic database manipulation.
 
 ## Usage
-First we need to define a connection:
+
+### Basic usage
 ```r
-conn = DBI::dbConnect(MonetDB.R::MonetDB(), '<database-name>')
+library(DBI)
+# Connect to the default MonetDB database:
+con <- DBI::dbConnect(MonetDB.R::MonetDB())
+
+# Let's add a table:
+dbWriteTable(con, "iris", iris)
+
+# Have a look at the newly added table
+dbListTables(con)
+dbListFields(con, "iris")
+dbReadTable(con, "iris")
+
+# Fetch all results of a query:
+res <- dbSendQuery(con, "SELECT * FROM iris WHERE \"Species\" = 'versicolor'")
+dbFetch(res)
+dbClearResult(res)
+
+# Fetch N rows of results at a time
+res <- dbSendQuery(con, "SELECT * FROM iris WHERE \"Species\" = 'versicolor'")
+while(!dbHasCompleted(res)){
+  chunk <- dbFetch(res, n=3)
+  print(chunk)
+  print(nrow(chunk))
+}
+dbClearResult(res)
+
+# Disconnect from the database
+dbDisconnect(con)
 ```
-
-If the `<database-name>` argument is omitted, it will default to the 'demo' database.
-
-## Unit testing
-The unit tests can be run from the shell:
-
+### Connect to a specific MonetDB instance:
 ```r
-library(testthat)
-testthat::test_dir('tests')
+library(DBI)
+# Connect to a specific MonetDB database:
+con <- dbConnect(MonetDB.R::MonetDB(),
+                 dbname = 'DATABASE_NAME', # e.g. 'demo'
+                 host = 'HOSTNAME', # i.e. 'www.example.org'
+                 port = 50000, # or any other port specified by your DBA
+                 user = 'USERNAME',
+                 password = 'PASSWORD')
 ```
-
-Note: There could be an issue with the csv imports. The daemon has insufficient rights to
-read the generated csv file. To fix this, run mserver5 yourself.
-
-Note: The tests will not run if the NOT_CRAN system variable is not set to "true".
-
-
-## Man pages
+### Man pages
 This packages provides man pages with explanation and examples of various functions.
 They can be accessed from the shell:
 
@@ -44,7 +69,28 @@ help('MonetDB.R')
 # or:
 ?MonetDB.R
 ```
+### MonetDB extensions
+This package also provides several MonetDB specitic functions to, e.g. control multistatements SQL transactions and bulk load CSV data using MonetDB's ``COPY INTO`` feature.  For their usage, please consume their man pages:
+```r
+# Use MonetDB's COPY INTO feature to bulk load CSV data into a database
+?monetdb.read.csv
 
+# Switch from the auto-commit mode to the transactional mode
+?dbTransaction
+
+# Send database altering statement to a MonetDB database
+?dbSendUpdate
+```
+
+## Unit testing
+The unit tests can be run from the shell:
+
+```r
+install.packages('devtools')
+library(devtools)
+devtools::check()
+```
+Note: The tests will not run if the NOT_CRAN system variable is not set to "true".
 
 ## Acknowledgements
 This Source Code Form is subject to the terms of the Mozilla Public License, v.
@@ -63,19 +109,11 @@ https://github.com/MonetDB/MonetDBLite-R (copied on July 17, 2020):
 	NAMESPACE
 	NEWS
 	README.md
-	R/dbapply.R
 	R/dbi.R
-	R/dplyr.R
 	R/mapi.R
 	man/MonetDB.R.Rd
-	man/control.Rd
-	man/dbApply.Rd
 	man/dbSendUpdate.Rd
 	man/monetdb.read.csv.Rd
-	man/monetdbRtype.Rd
-	man/monetdbd.liststatus.Rd
-	man/sqlitecompat.Rd
-	man/src_monetdb.Rd
 	src/embeddedr/mapisplit-r.c
 	src/embeddedr/mapisplit.c
 	src/embeddedr/mapisplit.h
