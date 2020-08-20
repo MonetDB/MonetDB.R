@@ -88,7 +88,11 @@ The unit tests can be run from the shell:
 ```r
 install.packages('devtools')
 library(devtools)
+
+# Run an extensive check including the unit tests:
 devtools::check()
+# Only run the unit tests:
+testthat::test_dir('tests/testthat')
 ```
 Note: The tests will not run if the NOT_CRAN system variable is not set to "true".
 
