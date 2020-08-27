@@ -7,6 +7,8 @@
 }
 \description{
   Instruct MonetDB to read a CSV file, optionally also create the table for it.
+  Note that this causes MonetDB to read a file on the machine where the server
+  is running, not on the machine where the R client runs.
 }
 \usage{
    monetdb.read.csv (conn, files, tablename, header=TRUE, 

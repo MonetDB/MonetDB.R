@@ -16,6 +16,10 @@ install.packages('/path/to/MonetDB.R.tar.gz', repos=NULL, type='source')
 ## Usage
 
 ### Basic usage
+
+Assuming MonetDB is running on localhost and a database named 'demo' exists and
+is accessible with the default username/password combination: monetdb/monetdb.
+
 ```r
 library(DBI)
 # Connect to the default MonetDB database:
