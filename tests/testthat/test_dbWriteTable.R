@@ -12,6 +12,13 @@ test_that("we can write a table to the database", {
     expect_equal(dbExistsTable(conn, "mtcars"), T)
 })
 
+test_that("the right keywords are used", {
+	 keywords <- dbGetQuery(conn, "SELECT * FROM sys.keywords")
+     reserved_monetdb_keywords <<- sort(unique(array(c(unlist(keywords)))))
+
+	 expect_true(length(reserved_monetdb_keywords) > 0)
+})
+
 test_that("special characters work", {
     table_name <- "specialcharsfoo"
     pi <- enc2utf8('U+03C0')
