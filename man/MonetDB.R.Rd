@@ -9,7 +9,7 @@
   DBI database connector for MonetDB
 }
 \description{
-  \code{MonetDB.R} creates a new DBI driver that can be used to connect and interact with MonetDB.
+  \code{MonetDB.R} creates a new DBI driver that can be used to connect to and interact with a MonetDB database.
 }
 \usage{
   MonetDB.R ()
@@ -19,7 +19,7 @@
   \code{\link[DBI]{dbConnect}}.
 }
 \details{
-  The \code{MonetDB.R} function creates the R object which can be used to a
+  The \code{MonetDB.R} function creates an R object which can be used to a
   call \code{\link[DBI]{dbConnect}} which actually creates the connection. 
   Since it has no parameters, it is most commonly used inline with the \code{\link[DBI]{dbConnect}} call.
  
