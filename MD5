@@ -11,3 +11,4 @@
 230cc65fe56cbb442517f84871e28e98 *src/mapisplit.c
 aff635c66e95eb5a0e9e6368d9a4c4dc *src/mapisplit.h
 b895fbab428bc3ed0d6c20a6ac4a6735 *man/dbWriteTable.Rd
+e4e8b825c8ba28c9219664241f17bdba *man/MonetDBDriver.Rd
