@@ -7,9 +7,7 @@
 46cc19ae2cdb0e10166ca93bb4af2e0c *man/dbSendUpdate.Rd
 6fdd2a2fe22b39129365e5f79612c2df *man/dbTransaction.Rd
 1bf066ea6614dbf942bdd8e89bd2642b *man/monetdb.read.csv.Rd
-633fbe7705ca10637c533a1ff589bbdf *man/monetdbRtype.Rd
-b338aa470266bdf7b26a99c2afbecf3e *man/monetdbd.liststatus.Rd
-b60c4824c726151b06cd22cf0c7cb207 *man/sqlitecompat.Rd
 2a809518a2c97df03f829ee73f9dd02e *src/mapisplit-r.c
 230cc65fe56cbb442517f84871e28e98 *src/mapisplit.c
 aff635c66e95eb5a0e9e6368d9a4c4dc *src/mapisplit.h
+b895fbab428bc3ed0d6c20a6ac4a6735 *man/dbWriteTable.Rd
