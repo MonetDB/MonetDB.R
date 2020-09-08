@@ -46,7 +46,7 @@ library(DBI)
 conn <- dbConnect(MonetDB.R::MonetDB(), dbname = "demo")
 # write test data to temporary CSV file
 file <- tempfile()
-write.table(iris, file, sep=",")
+write.table(iris, file, sep=",", row.names=F)
 # create table and import CSV
 MonetDB.R::monetdb.read.csv(conn, file, "iris")
 }}
