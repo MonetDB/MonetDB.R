@@ -9,8 +9,10 @@ NB: MonetDB.R version >=2.0.0 only works with MonetDB Jun2020 release or newer. 
 # Install the latest MonetDB.R release from CRAN:
 install.packages('MonetDB.R')
 
-#or from a source package:
+# or from a source package:
 install.packages('/path/to/MonetDB.R.tar.gz', repos=NULL, type='source')
+# One can create a source package from this repositry, where `monetdb-r` is the directory into which this repository has been cloned:
+$ tar -czf MonetDB.R.tar.gz monetdb-r
 ```
 
 ## Usage
