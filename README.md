@@ -11,8 +11,8 @@ install.packages('MonetDB.R')
 
 # or from a source package:
 install.packages('/path/to/MonetDB.R.tar.gz', repos=NULL, type='source')
-# One can create a source package from this repositry, where `monetdb-r` is the directory into which this repository has been cloned:
-$ tar -czf MonetDB.R.tar.gz monetdb-r
+# One can create a source package from this repository, where `monetdb-r` is the directory into which this repository has been cloned:
+$ tar --exclude=".git" -czvf MonetDB.R.tar.gz monetdb-r
 ```
 
 ## Usage
