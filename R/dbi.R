@@ -157,6 +157,23 @@ setMethod("dbListTables", "MonetDBConnection", def=function(conn, ..., sys_table
 if (is.null(getGeneric("dbTransaction"))) setGeneric("dbTransaction", function(conn, ...) 
   standardGeneric("dbTransaction"))
 
+
+#' @name dbTransaction
+#' @title Create, commit or abort a database transaction.
+#' @description 
+#' is used to switch the data from the normal auto-commiting mode into transactional mode. Here, changes to the database will not be permanent until \code{dbCommit} is called. If the changes are not to be kept around, you can use \code{dbRollback} to undo all the changes since \code{dbTransaction} was called. 
+#' 
+#' @param conn A MonetDB.R database connection, created using  \code{\link[DBI]{dbConnect}} with the \code{\link[MonetDB.R]{MonetDB.R}} database driver.
+#' @return TRUE if the transaction was successful
+#' @examples
+#' conn <- dbConnect(MonetDB.R(), "monetdb://localhost/acs")
+#' dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+#' dbTransaction(conn)
+#' dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
+#' dbCommit(conn)
+#' dbTransaction(conn)
+#' dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
+#' dbRollback(conn)
 setMethod("dbTransaction", signature(conn="MonetDBConnection"),  def=function(conn, ...) {
   dbBegin(conn)
   warning("dbTransaction() is deprecated, use dbBegin() from now.")
@@ -411,8 +428,27 @@ setMethod("dbRemoveTable", signature(conn="MonetDBConnection", name = "character
   return(invisible(FALSE))
 })
 
-# for compatibility with RMonetDB (and dbWriteTable support), we will allow parameters to this 
-# method, but will not use prepared statements internally
+#' @name dbSendUpdate
+#' @title Send a data-altering SQL statement to the database.
+#' @description 
+#' \code{dbSendUpdate} is used to send a data-altering statement to a MonetDB database, 
+#' e.g. \code{CREATE TABLE} or \code{INSERT}. As a convenience feature, a placeholder 
+#' (\code{?} character) can be used in the SQL statement, and bound to parameters given 
+#' in the varargs group before execution. This is especially useful when scripting 
+#' database updates, since the parameters will be automatically quoted. 
+#' The \code{dbSendUpdateAsync} function is used when the database update is called from 
+#' finalizers, to avoid very esoteric concurrency problems. Here, the update is not guaranteed 
+#'
+#' @param conn A MonetDB.R database connection, created using  \code{\link[DBI]{dbConnect}} with the \code{\link[MonetDB.R]{MonetDB.R}} database driver.
+#' @param statement A SQL statement to be sent to the database, e.g. 'UPDATE' or 'INSERT'.
+#' @param ... Parameters to be bound to '?' characters in the query, similar to JDBC.
+#' @param async Behave like \code{dbSendUpdateAsync}? Defaults to \code{FALSE}.
+#' @return TRUE update was successful
+#' @seealso \code{\link[DBI]{dbSendQuery}}
+#' @examples
+#' conn <- dbConnect(MonetDB.R(), "monetdb://localhost/acs")
+#' dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+#' dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 if (is.null(getGeneric("dbSendUpdate"))) setGeneric("dbSendUpdate", function(conn, statement, ..., 
                                                                              async=FALSE) standardGeneric("dbSendUpdate"))
 setMethod("dbSendUpdate", signature(conn="MonetDBConnection", statement="character"),  
