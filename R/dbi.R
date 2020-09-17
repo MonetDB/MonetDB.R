@@ -684,7 +684,31 @@ setMethod("dbGetRowsAffected", "MonetDBResult", def = function(res, ...) {
 }, 
 valueClass = "numeric")
 
-# adapted from RMonetDB, no java-specific things in here...
+#' @name monet.read.csv
+#' @title monet.read.csv
+#' @description 
+#' Instruct MonetDB to read a CSV file, optionally also create the table for it.
+#' Note that this causes MonetDB to read a file on the machine where the server
+#' is running, not on the machine where the R client runs.
+#' @param conn A MonetDB.R database connection, created using  \code{\link[DBI]{dbConnect}} with the \code{\link[MonetDB.R]{MonetDB.R}} database driver.
+#' @param files A single string or a vector of strings containing the absolute file names of the CSV files to be imported.
+#' @param tablename The dataframe that needs to be stored in the table
+#' @param header Whether or not the CSV files contain a header line.
+#' @param best.effort Use best effort flag when reading csv files and continue importing even if parsing of fields/lines fails.
+#' @param delim Field separator in CSV file.
+#' @param newline Newline in CSV file, usually \\n for UNIX-like systems and \\r\\r on Windows.
+#' @param quote Quote character(s) in CSV file.
+#' @param create Create table before importing?
+#' @param col.names Optional column names in case the ones from CSV file should not be used 
+#' @param lower.case.names Convert all column names to lowercase in the database?
+#' @param sep alias for \code{delim}
+#' @return Returns the number of rows imported if successful.
+#' @examples
+#' library(DBI)
+#' conn <- dbConnect(MonetDB.R::MonetDB(), dbname = "demo")
+#' file <- tempfile()
+#' write.table(iris, file, sep=",", row.names=F)
+#' MonetDB.R::monetdb.read.csv(conn, file, "iris")
 monet.read.csv <- monetdb.read.csv <- function(conn, files, tablename, header=TRUE, 
                                                best.effort=FALSE,
                                                delim=",", newline="\\n", quote="\"", create=TRUE, 
