@@ -299,6 +299,26 @@ quoteIfNeeded <- function(conn, x, warn=T, ...) {
   x
 }
 
+#' @name dbWriteTable
+#' @title dbWriteTable
+#' @description 
+#' Write, append or overwrite a data frame to a database table
+#' 
+#' @param conn A MonetDB.R database connection, created using  \code{\link[DBI]{dbConnect}} with the \code{\link[MonetDB.R]{MonetDB.R}} database driver.
+#' @param name The name of the database table.
+#' @param value The dataframe that needs to be stored in the table
+#' @param overwrite Overwrite the whole table with dataframe. default \code{False}
+#' @param append Append dataframe to table 
+#' @param csvdump Dump dataframe to a temporary CSV file, and then import that CSV file. Can be used for performance reasons. Default \code{False}
+#' @param transaction Wrap operation in transaction. Default: \code{True} 
+#' @param temporary Create a temporary table instead of a 'real' table Default: \code{False} 
+#' @return TRUE if the writetable command was successful
+#' @examples
+#' dbWriteTable(conn, "mtcars", mtcars[1:5,])
+#' dbWriteTable(conn, "mtcars", mtcars[5:10,], overwrite=T)
+#' dbWriteTable(conn, "mtcars", mtcars[11:15,], append=T)
+#' dbWriteTable(conn, "mtcars", mtcars[11:15,], append=T, csvdump=T)
+#' dbWriteTable(conn, "iris", iris, temporary=T)
 setMethod("dbWriteTable", signature(conn="MonetDBConnection", name = "character", value="ANY"), def=function(conn, name, value, overwrite=FALSE, 
   append=FALSE, csvdump=FALSE, transaction=TRUE, temporary=FALSE, ...) {
   if (is.character(value)) {

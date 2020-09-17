@@ -19,3 +19,4 @@ NeedsCompilation: yes
 Packaged: 2020-04-07 16:14:28 UTC; mitchell
 Repository: CRAN
 Date/Publication: 2020-04-07 23:07:24
+RoxygenNote: 7.1.1
