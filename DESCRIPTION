@@ -1,6 +1,6 @@
 Package: MonetDB.R
 Title: R DBI interface to MonetDB
-Version: 2.0.1
+Version: 2.1.0
 Authors@R: c(
 	person("Mitchell Weggemans", role = c("aut", "cre"),email = "mitchell.weggemans@monetdbsolutions.com"),
 	person("Hannes Muehleisen", role = "aut"),
