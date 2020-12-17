@@ -19,6 +19,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Install MonetDB
+        run: brew install MonetDB
+
+      - name: Setup Database
+        run: | 
+            monetdbd create /usr/local/var/lib/monetdb
+            monetdbd set control=yes /usr/local/var/lib/monetdb/
+            monetdbd set passphrase=testdb /usr/local/var/lib/monetdb
+            monetdbd start /usr/local/var/lib/monetdb
+            monetdb create temp
+            monetdb release temp
+            monetdb start temp
+
+
       - name: Set up R ${{ matrix.r-version }}
         uses: r-lib/actions/setup-r@ffe45a39586f073cc2e9af79c4ba563b657dc6e3
         with:
