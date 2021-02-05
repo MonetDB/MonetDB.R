@@ -1,4 +1,5 @@
 library(testthat)
+library(MonetDB.R)
 
 not_on_cran <- function() {
     return(invisible(identical(Sys.getenv("NOT_CRAN"), "true")))

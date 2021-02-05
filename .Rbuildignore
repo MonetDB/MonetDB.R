@@ -1,0 +1,7 @@
+^renv$
+^renv\.lock$
+^MonetDB\.R\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^\.RData$
+^\.Rhistory$

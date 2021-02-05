@@ -1,22 +1,50 @@
 Package: MonetDB.R
 Title: R DBI interface to MonetDB
 Version: 2.1.0
+Date: 2021-02-14
 Authors@R: c(
-	person("Mitchell Weggemans", role = c("aut", "cre"),email = "mitchell.weggemans@monetdbsolutions.com"),
-	person("Hannes Muehleisen", role = "aut"),
-	person("Anthony Damico", role = "aut"),
-	person("Thomas Lumley", role = "ctb"),
-	person("MonetDB developers team", role = "ctb"))
-Maintainer: Mitchell Weggemans <mitchell.weggemans@monetdbsolutions.com>
-Imports: DBI (>= 0.3.1), digest (>= 0.6.4), testthat, methods, codetools
-Description: a DBI-compliant R interface to MonetDB
+    person(given = "Mitchell",
+           family = "Weggemans", 
+           role = c("aut", "cre"),
+           email = "mitchell.weggemans@monetdbsolutions.com"),
+    person(given = "Ying",
+           family = "Zhang", 
+           role = "aut", 
+           email = "ying.zhang@monetdbsolutions.com"),
+    person(given = "Hannes", 
+           family = "Muehleisen", 
+           role = "aut"),
+    person(given = "Anthony", 
+           family = "Damico", 
+           role = "aut"),
+    person(given = "Thomas", 
+           family = "Lumley", 
+           role = "ctb"),
+    person("MonetDB Solutions developers team", role = "ctb"))
+Description: 
+    Fully R 'DBI'-compliant interface to 'MonetDB' <https://www.monetdb.org>, 
+    an open-source columnar RDBMS.
 License: MPL (== 2.0)
-URL: https://github.com/MonetDB/monetdb-r
-BugReports: https://github.com/MonetDB/monetdb-r/issues
-SystemRequirements: MonetDB (>= Jun2020), available from http://www.monetdb.org 
-Collate: mapi.R dbi.R 
-NeedsCompilation: yes
-Packaged: 2020-04-07 16:14:28 UTC; mitchell
-Repository: CRAN
-Date/Publication: 2020-04-07 23:07:24
+Copyright: 1997 - July 2008 CWI, August 2008 - 2021 MonetDB B.V.
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Depends:
+    R (>= 3.3.3)
+Imports:
+    DBI (>= 0.3.1),
+    digest (>= 0.6.4),
+    methods
+Suggests: 
+    testthat
+URL: https://github.com/MonetDB/MonetDB.R
+BugReports: https://github.com/MonetDB/MonetDB.R/issues
+SystemRequirements: MonetDB (>= Jun2020), available from https://www.monetdb.org/Downloads
+NeedsCompilation: yes
+Collate:
+    'MonetDBDriver.R'
+    'MonetDBConnection.R'
+    'MonetDBResult.R'
+    'mapi.R'
+    'transactions.R'
