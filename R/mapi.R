@@ -101,7 +101,6 @@ REPLY_SIZE <- 100
   return(resp)
 }
 
-
 .mapiConnect <- function(host, port, timeout) {
   socketConnection(
     host = host, port = port, blocking = TRUE, open = "r+b",
@@ -178,15 +177,6 @@ REPLY_SIZE <- 100
   }
   flush(con)
   return(NULL)
-}
-
-.mapiCleanup <- function(conObj) {
-  if (conObj@connenv$lock > 0) {
-    if (getOption("monetdb.debug.query", F)) {
-      message("II: Interrupted query execution.")
-    }
-    conObj@connenv$lock <- 0
-  }
 }
 
 .mapiLongInt <- function(someint) {
