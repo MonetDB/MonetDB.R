@@ -1,5 +1,7 @@
 # MAPI implementation for R
 
+#' @import digest
+
 PROTOCOL_v9 <- 9
 MAX_PACKET_SIZE <- 8100
 
