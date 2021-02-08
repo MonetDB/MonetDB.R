@@ -10,7 +10,11 @@ MonetDB.R <- function() {
 # allow instantiation of this driver with MonetDB to allow existing programs
 # to work
 #' @export
-MonetR <- MonetDB <- MonetDBR <- MonetDB.R
+MonetR <- MonetDB.R
+#' @export
+MonetDB <- MonetDB.R
+#' @export
+MonetDBR <- MonetDB.R
 
 # C library that contains our MAPI string splitting state machine
 C_LIBRARY <- "MonetDB.R"
