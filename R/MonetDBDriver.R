@@ -29,6 +29,8 @@ setClass("MonetDBDriver", contains = "DBIDriver")
 
 ### DBIDriver-class defined methods ###
 
+# show()
+
 # dbDriver() # deprecated
 
 # dbUnloadDriver() # not implemented for modern backends
