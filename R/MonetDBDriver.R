@@ -22,6 +22,7 @@ C_LIBRARY <- "MonetDB.R"
 #' MonetDBDriver and methods.
 #'
 #' @export
+#' @keywords internal
 setClass("MonetDBDriver", contains = "DBIDriver")
 
 # FIXME: implement a show() method for each? class

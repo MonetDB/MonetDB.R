@@ -3,7 +3,7 @@ NULL
 
 #' MonetDBConnection and methods.
 #'
-#' @slot connenv <TODO: describe what ever this slot does>
+#' @keywords internal
 #' @export
 setClass("MonetDBConnection",
   contains = "DBIConnection",
