@@ -49,7 +49,7 @@ quoteIfNeeded <- function(conn, x, warn = T, ...) {
     if (isTRUE(is.na(value))) {
       statement <- sub("?", "NULL", statement, fixed = TRUE)
     } else if (isTRUE(valueClass %in% c("numeric", "logical", "integer") &&
-      isTRUE(value != NULL))) {
+      isTRUE(!is.null(value)))) {
       statement <- sub("?", value, statement, fixed = TRUE)
     } else if (isTRUE(valueClass == c("raw"))) {
       stop("raw() data is so far only supported when reading from BLOBs")
