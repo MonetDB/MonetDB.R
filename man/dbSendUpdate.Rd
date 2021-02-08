@@ -2,44 +2,35 @@
 % Please edit documentation in R/MonetDBConnection.R
 \name{dbSendUpdate}
 \alias{dbSendUpdate}
-\alias{dbSendUpdateAsync,MonetDBConnection,character-method}
 \title{Send a data-altering SQL statement to the database.}
 \usage{
 \S4method{dbSendUpdate}{MonetDBConnection,character}(conn, statement, ..., list = NULL, async = FALSE)
-
-\S4method{dbSendUpdateAsync}{MonetDBConnection,character}(conn, statement, ..., list = NULL)
 }
 \arguments{
-\item{conn}{A MonetDB.R database connection, created using
-\code{\link[DBI]{dbConnect}} with the
-\code{\link[MonetDB.R]{MonetDB.R}} database driver.}
+\item{conn}{A MonetDB.R database connection, created using \code{\link[DBI:dbConnect]{DBI::dbConnect()}} with
+the \code{\link[=MonetDB.R]{MonetDB.R()}} database driver.}
 
-\item{statement}{A SQL statement to be sent to the database, e.g. 'UPDATE' or 'INSERT'.}
+\item{statement}{A SQL statement to be sent to the database, e.g. \code{UPDATE} or
+\code{INSERT}.}
 
 \item{...}{Parameters to be bound to '?' characters in the query, similar to
 JDBC.}
 
-\item{async}{Behaves like \code{dbSendUpdateAsync}? Defaults to \code{FALSE}.}
-}
-\value{
-TRUE update was successful
+\item{async}{Behaves like \code{\link[=dbSendUpdateAsync]{dbSendUpdateAsync()}}? Defaults to \code{FALSE}.}
 }
 \description{
-\code{dbSendUpdate} is used to send a data-altering statement to a MonetDB
-database, e.g. \code{CREATE TABLE} or \code{INSERT}. As a convenience
-feature, a placeholder (\code{?} character) can be used in the SQL statement,
-and bound to parameters given in the varargs group before execution. This is
-especially useful when scripting database updates, since the parameters will
-be automatically quoted.
-The \code{dbSendUpdateAsync} function is used when the database update is
-called from finalizers, to avoid very esoteric concurrency problems. Here,
-the update is not guaranteed
+The function \code{dbSendUpdate()} is used to send a data-altering statement
+to a MonetDB database, e.g. \verb{CREATE TABLE} or \code{INSERT}. As a
+convenience feature, a placeholder (\verb{?} character) can be used in the
+SQL statement, and bound to parameters given in the varargs group before
+execution. This is especially useful when scripting database updates, since
+the parameters will be automatically quoted.
 }
 \examples{
-conn <- dbConnect(MonetDB.R(), "monetdb://localhost/acs")
+conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
 dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
 dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 }
 \seealso{
-\code{\link[DBI]{dbSendQuery}}
+\code{\link[=dbSendUpdateAsync]{dbSendUpdateAsync()}} \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}
 }

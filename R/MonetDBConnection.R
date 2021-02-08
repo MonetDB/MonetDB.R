@@ -80,11 +80,38 @@ quoteIfNeeded <- function(conn, x, warn = T, ...) {
 
 ### DBIConnection-class defined methods ###
 
-# dbAppendTable()
+# show()
 
-# dbCanConnect()
+# DBIDriver > dbDataType()
+#' @name dbDataType
+#' @title dbDataType
+#' @description
+#' Determine database type for an R object
+#'
+#' @param dbObj MonetDB driver or connection.
+#' @param obj R Object to convert
+#'
+#' @export
+#' @rdname dbDataType
+setMethod("dbDataType",
+          signature(dbObj = "MonetDBConnection", obj = "ANY"),
+          function(dbObj, obj, ...) {
+            if (is.logical(obj)) {
+              "BOOLEAN"
+            } else if (is.integer(obj)) {
+              "INTEGER"
+            } else if (is.numeric(obj)) {
+              "DOUBLE PRECISION"
+            } else if (is.raw(obj)) {
+              "BLOB"
+            } else {
+              "STRING"
+            }
+          },
+          valueClass = "character"
+)
 
-# dbConnect()
+# DBIdriver > dbConnect()
 #' @name dbConnect
 #' @title dbConnect
 #' @description
@@ -255,37 +282,6 @@ setMethod("dbConnect", "MonetDBDriver", function(drv,
 valueClass = "MonetDBConnection"
 )
 
-# dbCreateTable()
-
-# dbDataType()
-#' @name dbDataType
-#' @title dbDataType
-#' @description
-#' Determine database type for R vector
-#'
-#' @param dbObj MonetDB driver or connection.
-#' @param obj Object to convert
-#'
-#' @export
-#' @rdname dbDataType
-setMethod("dbDataType",
-  signature(dbObj = "MonetDBConnection", obj = "ANY"),
-  function(dbObj, obj, ...) {
-    if (is.logical(obj)) {
-      "BOOLEAN"
-    } else if (is.integer(obj)) {
-      "INTEGER"
-    } else if (is.numeric(obj)) {
-      "DOUBLE PRECISION"
-    } else if (is.raw(obj)) {
-      "BLOB"
-    } else {
-      "STRING"
-    }
-  },
-  valueClass = "character"
-)
-
 # dbDisconnect()
 #' @export
 #' @rdname MonetDBConnection-class
@@ -293,141 +289,6 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
   .mapiDisconnect(conn@connenv$socket)
   invisible(TRUE)
 })
-
-# dbExecute()
-
-# dbExistsTable()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbExistsTable",
-  signature(conn = "MonetDBConnection", name = "character"),
-  function(conn, name, ...) {
-    name <- quoteIfNeeded(conn, name)
-    return(as.character(name) %in%
-      dbListTables(conn, sys_tables = T))
-  }
-)
-
-# dbGetException()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod("dbGetException", "MonetDBConnection", function(conn, ...) {
-  conn@connenv$exception
-})
-
-# dbGetInfo()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod("dbGetInfo", "MonetDBConnection", function(dbObj, ...) {
-  envdata <- DBI::dbGetQuery(dbObj, "SELECT name, value FROM sys.env()")
-  ll <- as.list(envdata$value)
-  names(ll) <- envdata$name
-  ll$name <- "MonetDBConnection"
-  ll$db.version <- NA
-  ll$dbname <- ll$gdk_dbname
-  ll$username <- NA
-  ll$host <- NA
-  ll$port <- NA
-  ll
-})
-
-# dbGetQuery()
-
-# dbIsReadOnly()
-
-# dbIsValid()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod("dbIsValid", "MonetDBConnection", function(dbObj, ...) {
-  return(invisible(!is.na(tryCatch(
-    {
-      dbGetInfo(dbObj)
-      TRUE
-    },
-    error = function(e) {
-      NA
-    }
-  ))))
-})
-
-# dbListFields()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbListFields",
-  signature(conn = "MonetDBConnection", name = "character"),
-  function(conn, name, ...) {
-    if (!dbExistsTable(conn, name)) {
-      stop(paste0("Unknown table: ", name))
-    }
-    df <- dbGetQuery(conn, paste0(
-      "SELECT columns.name AS name FROM sys.columns JOIN sys.tables ON ",
-      "columns.table_id = tables.id WHERE tables.name = '", name, "';"
-    ))
-    df$name
-  }
-)
-
-# dbListObjects()
-
-# dbListResults()
-
-# dbListTables()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbListTables", "MonetDBConnection",
-  function(conn, ..., sys_tables = F, schema_names = F) {
-    q <- paste(
-      "SELECT schemas.name AS sn, tables.name AS tn",
-      "FROM sys.tables JOIN sys.schemas",
-      "ON tables.schema_id = schemas.id"
-    )
-    if (!sys_tables) {
-      q <- paste0(q, " WHERE tables.system = FALSE ORDER BY sn, tn")
-    }
-    df <- dbGetQuery(conn, q)
-    df$tn <- quoteIfNeeded(conn, df$tn, warn = F)
-    res <- df$tn
-    if (schema_names) {
-      df$sn <- quoteIfNeeded(conn, df$sn, warn = F)
-      res <- paste0(df$sn, ".", df$tn)
-    }
-    as.character(res)
-  }
-)
-
-# dbReadTable()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbReadTable",
-  signature(conn = "MonetDBConnection", name = "character"),
-  function(conn, name, ...) {
-    name <- quoteIfNeeded(conn, name)
-    if (!dbExistsTable(conn, name)) {
-      stop(paste0("Unknown table: ", name))
-    }
-    dbGetQuery(conn, paste0("SELECT * FROM ", name), ...)
-  }
-)
-
-# dbRemoveTable()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbRemoveTable",
-  signature(conn = "MonetDBConnection", name = "character"),
-  function(conn, name, ...) {
-    name <- quoteIfNeeded(conn, name)
-    if (dbExistsTable(conn, name)) {
-      dbSendUpdate(conn, paste("DROP TABLE", name))
-      return(invisible(TRUE))
-    }
-    return(invisible(FALSE))
-  }
-)
 
 # dbSendQuery()
 #' @name dbSendQuery
@@ -487,7 +348,8 @@ setMethod(
     if (getOption("monetdb.debug.query", F)) {
       message("QQ: '", statement, "'")
     }
-    if (!is.null(log_file <- getOption("monetdb.log.query", NULL))) {
+    log_file <- getOption("monetdb.log.query", NULL)
+    if (!is.null(log_file)) {
       cat(c(statement, ";\n"), file = log_file, sep = "", append = TRUE)
     }
     # the actual request
@@ -495,7 +357,7 @@ setMethod(
     tryCatch(
       {
         mresp <- .mapiRequest(conn, paste0("s", statement, "\n;"),
-          async = async
+                              async = async
         )
         resp <- .mapiParseResponse(mresp)
       },
@@ -528,7 +390,7 @@ setMethod(
       env$open <- TRUE
     }
     if (resp$type == Q_UPDATE || resp$type == Q_CREATE ||
-      resp$type == MSG_ASYNC_REPLY || resp$type == MSG_PROMPT) {
+        resp$type == MSG_ASYNC_REPLY || resp$type == MSG_PROMPT) {
       env$success <- TRUE
       env$conn <- conn
       env$query <- statement
@@ -572,6 +434,79 @@ setMethod(
 
 # dbSendStatement()
 
+# dbGetQuery()
+
+# dbExecute()
+
+# dbGetException() # DEPRECATED
+#' @export
+#' @rdname MonetDBConnection-class
+setMethod("dbGetException", "MonetDBConnection", function(conn, ...) {
+  conn@connenv$exception
+})
+
+# dbListResults()
+
+# dbListFields()
+#' @export
+#' @rdname MonetDBConnection-class
+setMethod(
+  "dbListFields",
+  signature(conn = "MonetDBConnection", name = "character"),
+  function(conn, name, ...) {
+    if (!dbExistsTable(conn, name)) {
+      stop(paste0("Unknown table: ", name))
+    }
+    df <- dbGetQuery(conn, paste0(
+      "SELECT columns.name AS name FROM sys.columns JOIN sys.tables ON ",
+      "columns.table_id = tables.id WHERE tables.name = '", name, "';"
+    ))
+    df$name
+  }
+)
+
+# dbListTables()
+#' @export
+#' @rdname MonetDBConnection-class
+setMethod(
+  "dbListTables", "MonetDBConnection",
+  function(conn, ..., sys_tables = F, schema_names = F) {
+    q <- paste(
+      "SELECT schemas.name AS sn, tables.name AS tn",
+      "FROM sys.tables JOIN sys.schemas",
+      "ON tables.schema_id = schemas.id"
+    )
+    if (!sys_tables) {
+      q <- paste0(q, " WHERE tables.system = FALSE ORDER BY sn, tn")
+    }
+    df <- dbGetQuery(conn, q)
+    df$tn <- quoteIfNeeded(conn, df$tn, warn = F)
+    res <- df$tn
+    if (schema_names) {
+      df$sn <- quoteIfNeeded(conn, df$sn, warn = F)
+      res <- paste0(df$sn, ".", df$tn)
+    }
+    as.character(res)
+  }
+)
+
+# dbListObjects()
+
+# dbReadTable()
+#' @export
+#' @rdname MonetDBConnection-class
+setMethod(
+  "dbReadTable",
+  signature(conn = "MonetDBConnection", name = "character"),
+  function(conn, name, ...) {
+    name <- quoteIfNeeded(conn, name)
+    if (!dbExistsTable(conn, name)) {
+      stop(paste0("Unknown table: ", name))
+    }
+    dbGetQuery(conn, paste0("SELECT * FROM ", name), ...)
+  }
+)
+
 # dbWriteTable()
 #' @name dbWriteTable
 #' @title dbWriteTable
@@ -587,17 +522,16 @@ setMethod(
 #' @param value
 #'        The dataframe that needs to be stored in the table
 #' @param overwrite
-#'        Overwrite the whole table with dataframe. default \code{False}
+#'        Overwrite the whole table with dataframe. default `False`
 #' @param append
 #'        Append dataframe to table
 #' @param csvdump
 #'        Dump dataframe to a temporary CSV file, and then import that CSV file.
-#'        Can be used for performance reasons. Default \code{False}
+#'        Can be used for performance reasons. Default `False`
 #' @param transaction
-#'        Wrap operation in transaction. Default: \code{True}
+#'        Wrap operation in transaction. Default: `True`
 #' @param temporary
-#'        Create a temporary table instead of a 'real' table Default:
-#'        \code{False}
+#'        Create a temporary table instead of a 'real' table Default: `False`
 #' @return TRUE if the writetable command was successful
 #'
 #' @examples
@@ -634,8 +568,8 @@ setMethod(
     if (length(value[[1]]) > 0) {
       if (!is.data.frame(value)) {
         value <- as.data.frame(value,
-          row.names = 1:length(value[[1]]),
-          stringsAsFactors = F
+                               row.names = 1:length(value[[1]]),
+                               stringsAsFactors = F
         )
       }
     } else {
@@ -688,8 +622,8 @@ setMethod(
     if (csvdump) {
       tmp <- tempfile(fileext = ".csv")
       write.table(value, tmp,
-        sep = ",", quote = TRUE, row.names = FALSE,
-        col.names = FALSE, na = "", fileEncoding = "UTF-8"
+                  sep = ",", quote = TRUE, row.names = FALSE,
+                  col.names = FALSE, na = "", fileEncoding = "UTF-8"
       )
       dbSendQuery(conn, paste0(
         "COPY INTO ", qname, " FROM '", tmp,
@@ -699,7 +633,7 @@ setMethod(
     }
     else {
       vins <- paste("(", paste(rep("?", length(value)), collapse = ", "), ")",
-        sep = ""
+                    sep = ""
       )
       # chunk some inserts together so we do not need to do a round trip for
       # every one
@@ -727,6 +661,67 @@ setMethod(
   }
 )
 
+# dbExistsTable()
+#' @export
+#' @rdname MonetDBConnection-class
+setMethod(
+  "dbExistsTable",
+  signature(conn = "MonetDBConnection", name = "character"),
+  function(conn, name, ...) {
+    name <- quoteIfNeeded(conn, name)
+    return(as.character(name) %in%
+      dbListTables(conn, sys_tables = T))
+  }
+)
+
+# dbRemoveTable()
+#' @export
+#' @rdname MonetDBConnection-class
+setMethod(
+  "dbRemoveTable",
+  signature(conn = "MonetDBConnection", name = "character"),
+  function(conn, name, ...) {
+    name <- quoteIfNeeded(conn, name)
+    if (dbExistsTable(conn, name)) {
+      dbSendUpdate(conn, paste("DROP TABLE", name))
+      return(invisible(TRUE))
+    }
+    return(invisible(FALSE))
+  }
+)
+
+### methods from DBIObjeect ###
+# DBIObject > dbGetInfo()
+#' @export
+#' @rdname MonetDBConnection-class
+setMethod("dbGetInfo", "MonetDBConnection", function(dbObj, ...) {
+  envdata <- DBI::dbGetQuery(dbObj, "SELECT name, value FROM sys.env()")
+  ll <- as.list(envdata$value)
+  names(ll) <- envdata$name
+  ll$name <- "MonetDBConnection"
+  ll$db.version <- NA
+  ll$dbname <- ll$gdk_dbname
+  ll$username <- NA
+  ll$host <- NA
+  ll$port <- NA
+  ll
+})
+
+# DBIObject > dbIsValid()
+#' @export
+#' @rdname MonetDBConnection-class
+setMethod("dbIsValid", "MonetDBConnection", function(dbObj, ...) {
+  return(invisible(!is.na(tryCatch(
+    {
+      dbGetInfo(dbObj)
+      TRUE
+    },
+    error = function(e) {
+      NA
+    }
+  ))))
+})
+
 ### dbSendUpdate() and friends ###
 if (is.null(getGeneric("dbSendUpdate"))) {
   setGeneric(
@@ -738,32 +733,20 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #' @name dbSendUpdate
 #' @title Send a data-altering SQL statement to the database.
 #' @description
-#' \code{dbSendUpdate} is used to send a data-altering statement to a MonetDB
-#' database, e.g. \code{CREATE TABLE} or \code{INSERT}. As a convenience
-#' feature, a placeholder (\code{?} character) can be used in the SQL statement,
-#' and bound to parameters given in the varargs group before execution. This is
-#' especially useful when scripting database updates, since the parameters will
-#' be automatically quoted.
-#' The \code{dbSendUpdateAsync} function is used when the database update is
-#' called from finalizers, to avoid very esoteric concurrency problems. Here,
-#' the update is not guaranteed
+#' The function `dbSendUpdate()` is used to send a data-altering statement
+#' to a MonetDB database, e.g. `CREATE TABLE` or `INSERT`. As a
+#' convenience feature, a placeholder (`?` character) can be used in the
+#' SQL statement, and bound to parameters given in the varargs group before
+#' execution. This is especially useful when scripting database updates, since
+#' the parameters will be automatically quoted.
 #'
-#' @param conn
-#'        A MonetDB.R database connection, created using
-#'        \code{\link[DBI]{dbConnect}} with the
-#'        \code{\link[MonetDB.R]{MonetDB.R}} database driver.
-#' @param statement
-#'        A SQL statement to be sent to the database, e.g. 'UPDATE' or 'INSERT'.
-#' @param ...
-#'        Parameters to be bound to '?' characters in the query, similar to
-#'        JDBC.
+#' @inheritParams dbSendUpdateAsync
 #' @param async
-#'        Behaves like \code{dbSendUpdateAsync}? Defaults to \code{FALSE}.
-#' @return TRUE update was successful
-#' @seealso \code{\link[DBI]{dbSendQuery}}
+#'        Behaves like [dbSendUpdateAsync()]? Defaults to \code{FALSE}.
+#' @seealso [dbSendUpdateAsync()] [DBI::dbSendQuery()]
 #'
 #' @examples
-#' conn <- dbConnect(MonetDB.R(), "monetdb://localhost/acs")
+#' conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
 #' dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
 #' dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 #' @export
@@ -788,17 +771,46 @@ setMethod(
   }
 )
 
-# this can be used in finalizers to not mess up the socket
+# this can be used in finalisers to not mess up the socket
 if (is.null(getGeneric("dbSendUpdateAsync"))) {
   setGeneric(
     "dbSendUpdateAsync",
     function(conn, statement, ...) standardGeneric("dbSendUpdateAsync")
   )
 }
-#' @inheritParams dbSendUpdate
+#' @name dbSendUpdateAsync
+#' @title Send a data-altering SQL statement to the database.
+#' @description
+#' The \code{dbSendUpdateAsync()} function is used to send a data-altering
+#' statement to a MonetDB database, e.g. \code{CREATE TABLE} or \code{INSERT}.
+#' As a convenience feature, a placeholder (\code{?} character) can be used in
+#' the SQL statement, and bound to parameters given in the varargs group before
+#' execution. This is especially useful when scripting database updates, since
+#' the parameters will be automatically quoted.
 #'
+#' The \code{dbSendUpdateAsync()} function works in a similar way as
+#' [dbSendUpdate()], except that the former should be used
+#' when the database update is called from finalisers, to avoid very esoteric
+#' concurrency problems. Here, the update is not guaranteed
+#'
+#' @param conn
+#'        A MonetDB.R database connection, created using [DBI::dbConnect()] with
+#'        the [MonetDB.R()] database driver.
+#' @param statement
+#'        A SQL statement to be sent to the database, e.g. \code{UPDATE} or
+#'        \code{INSERT}.
+#' @param ...
+#'        Parameters to be bound to '?' characters in the query, similar to
+#'        JDBC.
+#' @return TRUE update was successful
+#' @seealso [dbSendUpdate()] [DBI::dbSendQuery()]
+#'
+#' @examples
+#' conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
+#' dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+#' dbSendUpdateAsync(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 #' @export
-#' @rdname dbSendUpdate
+#' @rdname dbSendUpdateAsync
 setMethod(
   "dbSendUpdateAsync",
   signature(conn = "MonetDBConnection", statement = "character"),

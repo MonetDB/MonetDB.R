@@ -34,8 +34,7 @@ Can be used for performance reasons. Default \code{False}}
 
 \item{transaction}{Wrap operation in transaction. Default: \code{True}}
 
-\item{temporary}{Create a temporary table instead of a 'real' table Default:
-\code{False}}
+\item{temporary}{Create a temporary table instead of a 'real' table Default: \code{False}}
 }
 \value{
 TRUE if the writetable command was successful

@@ -4,25 +4,19 @@
 \name{MonetDBConnection-class}
 \alias{MonetDBConnection-class}
 \alias{dbDisconnect,MonetDBConnection-method}
-\alias{dbExistsTable,MonetDBConnection,character-method}
 \alias{dbGetException,MonetDBConnection-method}
-\alias{dbGetInfo,MonetDBConnection-method}
-\alias{dbIsValid,MonetDBConnection-method}
 \alias{dbListFields,MonetDBConnection,character-method}
 \alias{dbListTables,MonetDBConnection-method}
 \alias{dbReadTable,MonetDBConnection,character-method}
+\alias{dbExistsTable,MonetDBConnection,character-method}
 \alias{dbRemoveTable,MonetDBConnection,character-method}
+\alias{dbGetInfo,MonetDBConnection-method}
+\alias{dbIsValid,MonetDBConnection-method}
 \title{MonetDBConnection and methods.}
 \usage{
 \S4method{dbDisconnect}{MonetDBConnection}(conn, ...)
 
-\S4method{dbExistsTable}{MonetDBConnection,character}(conn, name, ...)
-
 \S4method{dbGetException}{MonetDBConnection}(conn, ...)
-
-\S4method{dbGetInfo}{MonetDBConnection}(dbObj, ...)
-
-\S4method{dbIsValid}{MonetDBConnection}(dbObj, ...)
 
 \S4method{dbListFields}{MonetDBConnection,character}(conn, name, ...)
 
@@ -30,14 +24,15 @@
 
 \S4method{dbReadTable}{MonetDBConnection,character}(conn, name, ...)
 
+\S4method{dbExistsTable}{MonetDBConnection,character}(conn, name, ...)
+
 \S4method{dbRemoveTable}{MonetDBConnection,character}(conn, name, ...)
+
+\S4method{dbGetInfo}{MonetDBConnection}(dbObj, ...)
+
+\S4method{dbIsValid}{MonetDBConnection}(dbObj, ...)
 }
 \description{
 MonetDBConnection and methods.
 }
-\section{Slots}{
-
-\describe{
-\item{\code{connenv}}{<TODO: describe what ever this slot does>}
-}}
-
+\keyword{internal}

@@ -9,8 +9,8 @@
 \arguments{
 \item{dbObj}{MonetDB driver or connection.}
 
-\item{obj}{Object to convert}
+\item{obj}{R Object to convert}
 }
 \description{
-Determine database type for R vector
+Determine database type for an R object
 }

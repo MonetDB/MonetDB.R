@@ -2,6 +2,7 @@
 % Please edit documentation in R/transactions.R
 \name{transactions}
 \alias{transactions}
+\alias{dbBegin,MonetDBConnection-method}
 \alias{dbCommit,MonetDBConnection-method}
 \alias{dbRollback,MonetDBConnection-method}
 \title{Begin/commit/rollback SQL transactions}
@@ -11,34 +12,39 @@
 \S4method{dbCommit}{MonetDBConnection}(conn, ...)
 
 \S4method{dbRollback}{MonetDBConnection}(conn, ...)
-
-\S4method{dbTransaction}{MonetDBConnection}(conn, ...)
 }
 \arguments{
-\item{conn}{A MonetDB.R database connection, created using
-\code{\link[DBI]{dbConnect}} with the
-\code{\link[MonetDB.R]{MonetDB.R}} database driver.}
+\item{conn}{a \linkS4class{MonetDBConnection} object, produced by
+\code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
+
+\item{...}{Unused, for extensibility.}
 }
 \value{
-TRUE if the transaction was successful
+A boolean, indicating success or failure.
 }
 \description{
-\code{dbBegin()} starts a transaction. \code{dbCommit()} and \code{dbRollback()} end the
-transaction by either committing or rolling back the changes.
+Transaction management.
 
-\code{dbTransaction} is used to switch the data from the normal
-auto-commiting mode into transactional mode. Here, changes to the database
-will not be permanent until \code{dbCommit} is called. If the changes are
-not to be kept around, you can use \code{dbRollback} to undo all the changes
-since \code{dbTransaction} was called.
+\code{dbBegin()} starts a transaction. \code{dbCommit()} and \code{dbRollback()}
+end the transaction by either committing or rolling back the changes.
 }
 \examples{
-conn <- dbConnect(MonetDB.R(), "monetdb://localhost/acs")
-dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-dbTransaction(conn)
-dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
-dbCommit(conn)
-dbTransaction(conn)
-dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
-dbRollback(conn)
+# Only run the examples on systems with MonetDB connection:
+run <- monetdbHasDefault()
+
+library(DBI)
+if (run) con <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
+if (run) dbWriteTable(con, "USarrests", datasets::USArrests, temporary = TRUE)
+if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+
+if (run) dbBegin(con)
+if (run) dbExecute(con, 'DELETE from "USarrests" WHERE "Murder" > 1')
+if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+if (run) dbRollback(con)
+
+# Rolling back changes leads to original count
+if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+
+if (run) dbRemoveTable(con, "USarrests")
+if (run) dbDisconnect(con)
 }

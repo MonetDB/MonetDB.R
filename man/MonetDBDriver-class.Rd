@@ -17,3 +17,4 @@
 \description{
 MonetDBDriver and methods.
 }
+\keyword{internal}

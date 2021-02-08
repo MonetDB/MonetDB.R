@@ -281,17 +281,16 @@ setMethod("dbIsValid", signature(dbObj = "MonetDBResult"),
 
 
 ### compatibility with RSQLite ###
-if (is.null(getGeneric("isIdCurrent"))) {
-  setGeneric("isIdCurrent", function(dbObj, ...) standardGeneric("isIdCurrent"))
-}
-
 #' @name RSQLite compatibility
 #' @title RSQLite Compatibility Functions
 #' @description
 #' Functions for RSQLite compatibility.
-#'
+#' @seealso `RSQLite::isIdCurrent()` `RSQLite::initExtension()`
+if (is.null(getGeneric("isIdCurrent"))) {
+  setGeneric("isIdCurrent", function(dbObj, ...) standardGeneric("isIdCurrent"))
+}
 #' @export
-#' @rdname RSQLite compatibility
+#' @rdname RSQLite-compatibility
 setMethod("isIdCurrent", signature(dbObj = "MonetDBResult"),
           function(dbObj, ...) {
     .Deprecated("dbIsValid")
@@ -300,7 +299,7 @@ setMethod("isIdCurrent", signature(dbObj = "MonetDBResult"),
 )
 
 #' @export
-#' @rdname RSQLite compatibility
+#' @rdname RSQLite-compatibility
 setMethod("isIdCurrent", signature(dbObj = "MonetDBConnection"),
   function(dbObj, ...) {
     .Deprecated("dbIsValid")
@@ -315,7 +314,7 @@ if (is.null(getGeneric("initExtension"))) {
   )
 }
 #' @export
-#' @rdname RSQLite compatibility
+#' @rdname RSQLite-compatibility
 setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
   function(dbObj, ...) {
     .Deprecated(msg = "initExtension() is not required for MonetDB")
@@ -359,7 +358,7 @@ setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
 #' @param lower.case.names
 #'        Convert all column names to lowercase in the database?
 #' @param sep
-#'        alias for \code{delim}
+#'        alias for `delim`
 #' @return Returns the number of rows imported if successful.
 #'
 #' @examples
