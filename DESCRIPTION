@@ -47,4 +47,5 @@ Collate:
     'MonetDBConnection.R'
     'MonetDBResult.R'
     'mapi.R'
+    'rsqlite_compatibility.R'
     'transactions.R'

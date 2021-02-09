@@ -281,56 +281,6 @@ setMethod("dbIsValid", signature(dbObj = "MonetDBResult"),
 
 # dbUnquoteIdentifier()
 
-
-### compatibility with RSQLite ###
-#' @name RSQLite-compatibility
-#' @title RSQLite Compatibility Functions
-#' @description
-#' Functions for RSQLite compatibility.
-#' @param dbObj The database object, a `MonetDBResult` or `MonetDBConnection`.
-#' @param ... Any other parameters. Currently, none is supported.
-#' @seealso `RSQLite::isIdCurrent()` `RSQLite::initExtension()`
-if (is.null(getGeneric("isIdCurrent"))) {
-  setGeneric("isIdCurrent", function(dbObj, ...) standardGeneric("isIdCurrent"))
-}
-#' @export
-#' @rdname RSQLite-compatibility
-setMethod("isIdCurrent", signature(dbObj = "MonetDBResult"),
-          function(dbObj, ...) {
-    .Deprecated("dbIsValid")
-    dbIsValid(dbObj)
-  }
-)
-
-#' Functions for RSQLite compatibility.
-#'
-#' @param dbObj A `MonetDBConnection` object.
-#' @export
-#' @rdname RSQLite-compatibility
-setMethod("isIdCurrent", signature(dbObj = "MonetDBConnection"),
-  function(dbObj, ...) {
-    .Deprecated("dbIsValid")
-    dbIsValid(dbObj)
-  }
-)
-
-if (is.null(getGeneric("initExtension"))) {
-  setGeneric(
-    "initExtension",
-    function(dbObj, ...) standardGeneric("initExtension")
-  )
-}
-#' Functions for RSQLite compatibility.
-#'
-#' @param dbObj A `MonetDBConnection` object.
-#' @export
-#' @rdname RSQLite-compatibility
-setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
-  function(dbObj, ...) {
-    .Deprecated(msg = "initExtension() is not required for MonetDB")
-  }
-)
-
 ### monetdb.read.csv ###
 #' @name monetdb.read.csv
 #' @title monet.read.csv
