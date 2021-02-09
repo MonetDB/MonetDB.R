@@ -11,8 +11,12 @@
 
 \item{statement}{An SQL string to execute}
 
-\item{...}{Another arguments needed for compatibility with generic (
-currently ignored).}
+\item{...}{Another arguments needed for compatibility with generic (currently
+ignored).}
+
+\item{list}{A list of extra parameters. Default: \code{NULL}.}
+
+\item{async}{Execute the query in Async mode? Default: \code{FALSE}.}
 
 \item{params}{A list of query parameters to be substituted into
 a parameterised query. Query parameters are sent as strings, and the

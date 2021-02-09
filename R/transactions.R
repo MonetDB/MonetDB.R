@@ -1,7 +1,6 @@
-#' @name transactions
-#' @title Begin/commit/rollback SQL transactions
-#' @description
-#' Transaction management.
+#' MonetDB transaction management.
+#'
+#' Functions to begin, commit or rollback SQL transactions
 #'
 #' `dbBegin()` starts a transaction. `dbCommit()` and `dbRollback()`
 #' end the transaction by either committing or rolling back the changes.
@@ -29,26 +28,26 @@
 #'
 #' if (run) dbRemoveTable(con, "USarrests")
 #' if (run) dbDisconnect(con)
+#' @include MonetDBConnection.R
+#' @name monetdb-transactions
 NULL
 
-####include MonetDBConnection.R
-
 #' @export
-#' @rdname transactions
+#' @rdname monetdb-transactions
 setMethod("dbBegin", "MonetDBConnection", function(conn, ...) {
   dbSendQuery(conn, "START TRANSACTION")
   invisible(TRUE)
 })
 
 #' @export
-#' @rdname transactions
+#' @rdname monetdb-transactions
 setMethod("dbCommit", "MonetDBConnection", function(conn, ...) {
   dbSendQuery(conn, "COMMIT")
   invisible(TRUE)
 })
 
 #' @export
-#' @rdname transactions
+#' @rdname monetdb-transactions
 setMethod("dbRollback", "MonetDBConnection", function(conn, ...) {
   dbSendQuery(conn, "ROLLBACK")
   invisible(TRUE)
@@ -64,19 +63,19 @@ if (is.null(getGeneric("dbTransaction"))) {
 #' @name dbTransaction
 #' @title Run a multi-statements transaction
 #' @description
-#' This method is DEPRECATED. Please use MonetDB's [transactions] functions
+#' This method is DEPRECATED. Please use [monetdb-transactions] functions
 #' instead.
 #'
-#' `dbTransaction()` is used to switch the data from the normal
-#' auto-commiting mode into transactional mode. Here, changes to the database
-#' will not be permanent until [dbCommit()] is called. If the changes are
-#' not to be kept around, you can use [dbRollback()] to undo all the changes
-#' since `dbTransaction` was called.
+#' `dbTransaction()` is used to switch the query processing from the normal
+#' auto-commiting mode into the transactional mode. Here, changes to the
+#' database will not be permanent until [dbCommit()] is called. If the changes
+#' are not to be persisted in the database, you can use [dbRollback()] to undo
+#' all the changes since `dbTransaction()` was called.
 #'
 #' @param conn
-#'        A MonetDB.R database connection, created using
-#'        \code{\link[DBI]{dbConnect}} with the
-#'        \code{\link[MonetDB.R]{MonetDB.R}} database driver.
+#'        A MonetDB.R database connection, created using [DBI::dbConnect] with
+#'        the [MonetDB.R] database driver.
+#' @param ... More parameters. Ignored.
 #' @return TRUE if the transaction was successful
 #'
 #' @examples
@@ -93,7 +92,6 @@ if (is.null(getGeneric("dbTransaction"))) {
 #' if (run) dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
 #' if (run) dbRollback(conn)
 #' @export
-#' @rdname dbTransaction
 setMethod(
   "dbTransaction", signature(conn = "MonetDBConnection"),
   function(conn, ...) {

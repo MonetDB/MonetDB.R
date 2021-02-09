@@ -16,6 +16,8 @@ the \code{\link[=MonetDB.R]{MonetDB.R()}} database driver.}
 \item{...}{Parameters to be bound to '?' characters in the query, similar to
 JDBC.}
 
+\item{list}{A list of extra parameters.}
+
 \item{async}{Behaves like \code{\link[=dbSendUpdateAsync]{dbSendUpdateAsync()}}? Defaults to \code{FALSE}.}
 }
 \description{

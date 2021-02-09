@@ -25,8 +25,6 @@ C_LIBRARY <- "MonetDB.R"
 #' @keywords internal
 setClass("MonetDBDriver", contains = "DBIDriver")
 
-# FIXME: implement a show() method for each? class
-
 ### DBIDriver-class defined methods ###
 
 # show()
@@ -50,6 +48,7 @@ setMethod("dbUnloadDriver", "MonetDBDriver", function(drv, ...) {
 # dbDataType()
 
 # dbIsValid()
+# FIXME: is this rdname correct? Or should it be MonetDBResult-class?
 #' @export
 #' @rdname MonetDBDriver-class
 setMethod("dbIsValid", "MonetDBDriver", function(dbObj, ...) {

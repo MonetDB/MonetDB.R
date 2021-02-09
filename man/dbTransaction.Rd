@@ -7,22 +7,23 @@
 \S4method{dbTransaction}{MonetDBConnection}(conn, ...)
 }
 \arguments{
-\item{conn}{A MonetDB.R database connection, created using
-\code{\link[DBI]{dbConnect}} with the
-\code{\link[MonetDB.R]{MonetDB.R}} database driver.}
+\item{conn}{A MonetDB.R database connection, created using \link[DBI:dbConnect]{DBI::dbConnect} with
+the \link{MonetDB.R} database driver.}
+
+\item{...}{More parameters. Ignored.}
 }
 \value{
 TRUE if the transaction was successful
 }
 \description{
-This method is DEPRECATED. Please use MonetDB's \link{transactions} functions
+This method is DEPRECATED. Please use \link{monetdb-transactions} functions
 instead.
 
-\code{dbTransaction()} is used to switch the data from the normal
-auto-commiting mode into transactional mode. Here, changes to the database
-will not be permanent until \code{\link[=dbCommit]{dbCommit()}} is called. If the changes are
-not to be kept around, you can use \code{\link[=dbRollback]{dbRollback()}} to undo all the changes
-since \code{dbTransaction} was called.
+\code{dbTransaction()} is used to switch the query processing from the normal
+auto-commiting mode into the transactional mode. Here, changes to the
+database will not be permanent until \code{\link[=dbCommit]{dbCommit()}} is called. If the changes
+are not to be persisted in the database, you can use \code{\link[=dbRollback]{dbRollback()}} to undo
+all the changes since \code{dbTransaction()} was called.
 }
 \examples{
 # Only run the examples on systems with MonetDB connection:

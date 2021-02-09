@@ -22,38 +22,31 @@
 \item{drv}{Should be set to \code{\link[=MonetDB]{MonetDB()}}
 to use the \pkg{MonetDB.R} package.}
 
-\item{dbname}{Database name. If \code{NULL}, defaults to the user name.
-Note that this argument can only contain the database name, it will not
-be parsed as a connection string (internally, \code{expand_dbname} is set to
-\code{false} in the call to
-\code{\link[=PQconnectdbParams]{PQconnectdbParams()}}(https://www.postgresql.org/docs/9.6/static/    libpq-connect.html)).}
+\item{dbname}{The name of the database to connect. Default \code{"demo"}.}
 
-\item{user, password}{User name and password. If \code{NULL}, will be
-retrieved from \code{PGUSER} and \code{PGPASSWORD} envvars, or from the
-appropriate line in \verb{~/.pgpass}. See
-\url{http://www.postgresql.org/docs/9.6/static/libpq-pgpass.html} for
-more details.}
+\item{user}{The name of the database user to log in. Default \code{"monetdb"}.}
 
-\item{host, port}{Host and port. If \code{NULL}, will be retrieved from
-\code{PGHOST} and \code{PGPORT} env vars.}
+\item{password}{Password to use. Default \code{"monetdb"}.}
+
+\item{host}{Hostname where the MonetDB server is running.
+Default \code{localhost}.}
+
+\item{port}{Port number to which the MonetDB server is listening.
+Default: \code{50000}.}
+
+\item{timeout}{Query timeout in seconds. Default: 86400.}
+
+\item{wait}{If the server is not ready yet, wait for it? Default: no.}
+
+\item{language}{The query language to use. Default: \code{"sql"}.}
 
 \item{...}{Other name-value pairs that describe additional connection
-options as described at
-<http://www.postgresql.org/docs/9.6/static/libpq-connect.html#LIBPQ-   PARAMKEYWORDS>}
+options.}
 
-\item{service}{Name of service to connect as.  If \code{NULL}, will be
-ignored.  Otherwise, connection parameters will be loaded from the     pg_service.conf
-file and used.  See <http://www.postgresql.org/docs/9.6/static/libpq-  pgservice.html>
-for details on this file and syntax.}
-
-\item{check_interrupts}{Should user interrupts be checked during the     query execution (before
-first row of data is available)? Setting to \code{TRUE} allows interruption of queries
-running too long.}
-
-\item{timezone}{Sets the timezone for the connection. The default is     \code{"UTC"}.
-If \code{NULL} then no timezone is set, which defaults to localtime.}
-
-\item{conn}{Connection to disconnect.}
+\item{url}{\code{dbname} as a url string. Default: \code{""}.}
+}
+\value{
+conn Connection established to the given MonetDB server.
 }
 \description{
 FIXME: the documentation here needs to be updated to MonetDB

@@ -3,11 +3,13 @@ NULL
 
 #' MonetDBConnection and methods.
 #'
-#' @keywords internal
 #' @export
+#' @slot connenv list of connection environment variables and their values.
+#' @keywords internal
 setClass("MonetDBConnection",
   contains = "DBIConnection",
   slots = c(
+    # FIXME: this seems to be unused. Maybe it's a placeholder?
     connenv = "environment"
   )
 )
@@ -90,6 +92,7 @@ quoteIfNeeded <- function(conn, x, warn = T, ...) {
 #'
 #' @param dbObj MonetDB driver or connection.
 #' @param obj R Object to convert
+#' @param ... Any other parameters. Currently, none is supported.
 #'
 #' @export
 #' @rdname dbDataType
@@ -127,31 +130,20 @@ setMethod("dbDataType",
 #'
 #' @param drv Should be set to [MonetDB.R::MonetDB()]
 #'   to use the \pkg{MonetDB.R} package.
-#' @param dbname Database name. If `NULL`, defaults to the user name.
-#'   Note that this argument can only contain the database name, it will not
-#'   be parsed as a connection string (internally, `expand_dbname` is set to
-#'   `false` in the call to
-#'   [`PQconnectdbParams()`](https://www.postgresql.org/docs/9.6/static/    libpq-connect.html)).
-#' @param user,password User name and password. If `NULL`, will be
-#'   retrieved from `PGUSER` and `PGPASSWORD` envvars, or from the
-#'   appropriate line in `~/.pgpass`. See
-#'   <http://www.postgresql.org/docs/9.6/static/libpq-pgpass.html> for
-#'   more details.
-#' @param host,port Host and port. If `NULL`, will be retrieved from
-#'   `PGHOST` and `PGPORT` env vars.
-#' @param service Name of service to connect as.  If `NULL`, will be
-#'   ignored.  Otherwise, connection parameters will be loaded from the     pg_service.conf
-#'   file and used.  See <http://www.postgresql.org/docs/9.6/static/libpq-  pgservice.html>
-#'   for details on this file and syntax.
+#' @param dbname The name of the database to connect. Default `"demo"`.
+#' @param user The name of the database user to log in. Default `"monetdb"`.
+#' @param password Password to use. Default `"monetdb"`.
+#' @param host Hostname where the MonetDB server is running.
+#'   Default `localhost`.
+#' @param port Port number to which the MonetDB server is listening.
+#'   Default: `50000`.
+#' @param timeout Query timeout in seconds. Default: 86400.
+#' @param wait If the server is not ready yet, wait for it? Default: no.
+#' @param language The query language to use. Default: `"sql"`.
 #' @param ... Other name-value pairs that describe additional connection
-#'   options as described at
-#'   <http://www.postgresql.org/docs/9.6/static/libpq-connect.html#LIBPQ-   PARAMKEYWORDS>
-#' @param check_interrupts Should user interrupts be checked during the     query execution (before
-#'   first row of data is available)? Setting to `TRUE` allows interruption of queries
-#'   running too long.
-#' @param timezone Sets the timezone for the connection. The default is     `"UTC"`.
-#'   If `NULL` then no timezone is set, which defaults to localtime.
-#' @param conn Connection to disconnect.
+#'   options.
+#' @param url `dbname` as a url string. Default: `""`.
+#' @return conn Connection established to the given MonetDB server.
 #'
 #' @examples
 #' library(DBI)
@@ -227,7 +219,7 @@ setMethod("dbConnect", "MonetDBDriver", function(drv,
         {
           # open socket with a 5-sec timeout
           # so we can check whether everything works
-          suppressWarnings(socket <- socket <<- .mapiConnect(host, port, 5))
+          suppressWarnings(socket <<- .mapiConnect(host, port, 5))
           # authenticate
           .mapiAuthenticate(socket, dbname, user, password,
             language = language
@@ -269,7 +261,7 @@ setMethod("dbConnect", "MonetDBDriver", function(drv,
   conn <- new("MonetDBConnection", connenv = connenv)
 
   # Fill the MonetDB keywords
-  keywords <- dbGetQuery(conn, "SELECT * FROM sys.keywords")
+  keywords <- DBI::dbGetQuery(conn, "SELECT * FROM sys.keywords")
   reserved_monetdb_keywords <<- sort(unique(array(c(unlist(keywords)))))
 
   if (getOption("monetdb.sequential", F)) {
@@ -309,15 +301,17 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 #'   a parameterised query. Query parameters are sent as strings, and the
 #'   correct type is imputed by PostgreSQL. If this fails, you can manually
 #'   cast the parameter with e.g. `"$1::bigint"`.
-#' @param ... Another arguments needed for compatibility with generic (
-#'   currently ignored).
+#' @param ... Another arguments needed for compatibility with generic (currently
+#'   ignored).
+#' @param list A list of extra parameters. Default: `NULL`.
+#' @param async Execute the query in Async mode? Default: `FALSE`.
 #'
 #' @examples
 #' # For running the examples on systems without PostgreSQL connection:
 #' run <- postgresHasDefault()
 #'
 #' library(DBI)
-#' if (run) db <- dbConnect(RPostgres::Postgres())
+#' if (run) db <- dbConnect(MonetDB.R::MonetDB.R())
 #' if (run) dbWriteTable(db, "usarrests", datasets::USArrests, temporary = TRUE)
 #'
 #' # Run query to get results as dataframe
@@ -514,24 +508,25 @@ setMethod(
 #' Write, append or overwrite a data frame to a database table
 #'
 #' @param conn
-#'        A MonetDB.R database connection, created using
-#'        \code{\link[DBI]{dbConnect}} with the
-#'        \code{\link[MonetDB.R]{MonetDB.R}} database driver.
+#'        A MonetDB.R database connection, created using [DBI::dbConnect] with
+#'        the [MonetDB.R] database driver.
 #' @param name
 #'        The name of the database table.
 #' @param value
 #'        The dataframe that needs to be stored in the table
 #' @param overwrite
-#'        Overwrite the whole table with dataframe. default `False`
+#'        Overwrite the whole table with dataframe. Default `FALSE`.
 #' @param append
 #'        Append dataframe to table
 #' @param csvdump
 #'        Dump dataframe to a temporary CSV file, and then import that CSV file.
-#'        Can be used for performance reasons. Default `False`
+#'        Can be used for performance reasons. Default `FALSE`.
 #' @param transaction
-#'        Wrap operation in transaction. Default: `True`
+#'        Wrap operation in transaction. Default: `TRUE`.
 #' @param temporary
-#'        Create a temporary table instead of a 'real' table Default: `False`
+#'        Create a temporary table instead of a normal SQL table (i.e.
+#'        persistent). Default: `FALSE`.
+#' @param ... Any other parameters. Passed to [monetdb.read.csv()]
 #' @return TRUE if the writetable command was successful
 #'
 #' @examples
@@ -742,7 +737,7 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #'
 #' @inheritParams dbSendUpdateAsync
 #' @param async
-#'        Behaves like [dbSendUpdateAsync()]? Defaults to \code{FALSE}.
+#'        Behaves like [dbSendUpdateAsync()]? Defaults to `FALSE`.
 #' @seealso [dbSendUpdateAsync()] [DBI::dbSendQuery()]
 #'
 #' @examples
@@ -781,14 +776,14 @@ if (is.null(getGeneric("dbSendUpdateAsync"))) {
 #' @name dbSendUpdateAsync
 #' @title Send a data-altering SQL statement to the database.
 #' @description
-#' The \code{dbSendUpdateAsync()} function is used to send a data-altering
-#' statement to a MonetDB database, e.g. \code{CREATE TABLE} or \code{INSERT}.
-#' As a convenience feature, a placeholder (\code{?} character) can be used in
-#' the SQL statement, and bound to parameters given in the varargs group before
-#' execution. This is especially useful when scripting database updates, since
-#' the parameters will be automatically quoted.
+#' The `dbSendUpdateAsync()` function is used to send a data-altering
+#' statement to a MonetDB database, e.g. `CREATE TABLE` or `INSERT`.
+#' As a convenience feature, a placeholder (i.e. the `?` character) can be used
+#' in the SQL statement, and bound to parameters given in the varargs group
+#' before execution. This is especially useful when scripting database updates,
+#' since the parameters will be automatically quoted.
 #'
-#' The \code{dbSendUpdateAsync()} function works in a similar way as
+#' The `dbSendUpdateAsync()` function works in a similar way as
 #' [dbSendUpdate()], except that the former should be used
 #' when the database update is called from finalisers, to avoid very esoteric
 #' concurrency problems. Here, the update is not guaranteed
@@ -797,11 +792,12 @@ if (is.null(getGeneric("dbSendUpdateAsync"))) {
 #'        A MonetDB.R database connection, created using [DBI::dbConnect()] with
 #'        the [MonetDB.R()] database driver.
 #' @param statement
-#'        A SQL statement to be sent to the database, e.g. \code{UPDATE} or
-#'        \code{INSERT}.
+#'        A SQL statement to be sent to the database, e.g. `UPDATE` or
+#'        `INSERT`.
 #' @param ...
 #'        Parameters to be bound to '?' characters in the query, similar to
 #'        JDBC.
+#' @param list A list of extra parameters.
 #' @return TRUE update was successful
 #' @seealso [dbSendUpdate()] [DBI::dbSendQuery()]
 #'

@@ -17,24 +17,26 @@
 )
 }
 \arguments{
-\item{conn}{A MonetDB.R database connection, created using
-\code{\link[DBI]{dbConnect}} with the
-\code{\link[MonetDB.R]{MonetDB.R}} database driver.}
+\item{conn}{A MonetDB.R database connection, created using \link[DBI:dbConnect]{DBI::dbConnect} with
+the \link{MonetDB.R} database driver.}
 
 \item{name}{The name of the database table.}
 
 \item{value}{The dataframe that needs to be stored in the table}
 
-\item{overwrite}{Overwrite the whole table with dataframe. default \code{False}}
+\item{overwrite}{Overwrite the whole table with dataframe. Default \code{FALSE}.}
 
 \item{append}{Append dataframe to table}
 
 \item{csvdump}{Dump dataframe to a temporary CSV file, and then import that CSV file.
-Can be used for performance reasons. Default \code{False}}
+Can be used for performance reasons. Default \code{FALSE}.}
 
-\item{transaction}{Wrap operation in transaction. Default: \code{True}}
+\item{transaction}{Wrap operation in transaction. Default: \code{TRUE}.}
 
-\item{temporary}{Create a temporary table instead of a 'real' table Default: \code{False}}
+\item{temporary}{Create a temporary table instead of a normal SQL table (i.e.
+persistent). Default: \code{FALSE}.}
+
+\item{...}{Any other parameters. Passed to \code{\link[=monetdb.read.csv]{monetdb.read.csv()}}}
 }
 \value{
 TRUE if the writetable command was successful

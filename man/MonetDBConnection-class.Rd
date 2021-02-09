@@ -35,4 +35,10 @@
 \description{
 MonetDBConnection and methods.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{connenv}}{list of connection environment variables and their values.}
+}}
+
 \keyword{internal}

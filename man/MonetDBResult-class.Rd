@@ -35,6 +35,6 @@ MonetDBResult and methods.
 \section{Slots}{
 
 \describe{
-\item{\code{env}}{TODO: describe what ever this slot does}
+\item{\code{env}}{list of connection environment variables and their values.}
 }}
 

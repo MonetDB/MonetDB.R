@@ -10,6 +10,8 @@
 \item{dbObj}{MonetDB driver or connection.}
 
 \item{obj}{R Object to convert}
+
+\item{...}{Any other parameters. Currently, none is supported.}
 }
 \description{
 Determine database type for an R object

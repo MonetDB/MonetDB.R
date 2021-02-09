@@ -3,7 +3,7 @@ NULL
 
 #' MonetDBResult and methods.
 #'
-#' @slot env TODO: describe what ever this slot does
+#' @slot env list of connection environment variables and their values.
 #' @export
 setClass("MonetDBResult",
   contains = "DBIResult",
@@ -44,6 +44,8 @@ monetdbRtype <- function(dbType) {
 }
 
 # FIXME: check if this is still the case
+#' @export
+#' @rdname MonetDBResult-class
 setMethod("fetch", signature(res = "MonetDBResult", n = "numeric"),
   function(res, n, ...) {
     # DBI on CRAN still uses fetch()
@@ -281,10 +283,12 @@ setMethod("dbIsValid", signature(dbObj = "MonetDBResult"),
 
 
 ### compatibility with RSQLite ###
-#' @name RSQLite compatibility
+#' @name RSQLite-compatibility
 #' @title RSQLite Compatibility Functions
 #' @description
 #' Functions for RSQLite compatibility.
+#' @param dbObj The database object, a `MonetDBResult` or `MonetDBConnection`.
+#' @param ... Any other parameters. Currently, none is supported.
 #' @seealso `RSQLite::isIdCurrent()` `RSQLite::initExtension()`
 if (is.null(getGeneric("isIdCurrent"))) {
   setGeneric("isIdCurrent", function(dbObj, ...) standardGeneric("isIdCurrent"))
@@ -298,6 +302,9 @@ setMethod("isIdCurrent", signature(dbObj = "MonetDBResult"),
   }
 )
 
+#' Functions for RSQLite compatibility.
+#'
+#' @param dbObj A `MonetDBConnection` object.
 #' @export
 #' @rdname RSQLite-compatibility
 setMethod("isIdCurrent", signature(dbObj = "MonetDBConnection"),
@@ -313,6 +320,9 @@ if (is.null(getGeneric("initExtension"))) {
     function(dbObj, ...) standardGeneric("initExtension")
   )
 }
+#' Functions for RSQLite compatibility.
+#'
+#' @param dbObj A `MonetDBConnection` object.
 #' @export
 #' @rdname RSQLite-compatibility
 setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
@@ -321,8 +331,8 @@ setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
   }
 )
 
-### monet.read.csv ###
-#' @name monet.read.csv
+### monetdb.read.csv ###
+#' @name monetdb.read.csv
 #' @title monet.read.csv
 #' @description
 #' Instruct MonetDB to read a CSV file, optionally also create the table for it.
@@ -330,9 +340,8 @@ setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
 #' is running, not on the machine where the R client runs.
 #'
 #' @param conn
-#'        A MonetDB.R database connection, created using
-#'        \code{\link[DBI]{dbConnect}} with the
-#'        \code{\link[MonetDB.R]{MonetDB.R}} database driver.
+#'        A MonetDB.R database connection, created using [DBI::dbConnect] with
+#'        the [MonetDB.R] database driver.
 #' @param files
 #'        A single string or a vector of strings containing the absolute file
 #'        names of the CSV files to be imported.
@@ -346,8 +355,8 @@ setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
 #' @param delim
 #'        Field separator in CSV file.
 #' @param newline
-#'        Newline in CSV file, usually \\n for UNIX-like systems and
-#'        \\r\\r on Windows.
+#'        Newline in CSV file, usually `\\n` for UNIX-like systems and
+#'        `\\r\\r` on Windows.
 #' @param quote
 #'        Quote character(s) in CSV file.
 #' @param create
@@ -358,7 +367,9 @@ setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
 #' @param lower.case.names
 #'        Convert all column names to lowercase in the database?
 #' @param sep
-#'        alias for `delim`
+#'        Alias for `delim`
+#' @param ...
+#'        Any other parameters. Ignored.
 #' @return Returns the number of rows imported if successful.
 #'
 #' @examples
@@ -369,8 +380,7 @@ setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
 #' MonetDB.R::monetdb.read.csv(conn, file, "iris")
 #'
 #' @export
-#' @rdname monet.read.csv
-monet.read.csv <- monetdb.read.csv <-
+monetdb.read.csv <-
   function(conn, files, tablename, header = TRUE, best.effort = FALSE,
            delim = ",", newline = "\\n", quote = "\"", create = TRUE,
            col.names = NULL, lower.case.names = FALSE, sep = delim, ...) {
@@ -417,3 +427,6 @@ monet.read.csv <- monetdb.read.csv <-
     dbCommit(conn)
     on.exit(NULL)
   }
+#' @export
+#' @rdname monetdb.read.csv
+monet.read.csv <- monetdb.read.csv

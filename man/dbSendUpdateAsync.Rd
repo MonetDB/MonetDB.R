@@ -15,17 +15,19 @@ the \code{\link[=MonetDB.R]{MonetDB.R()}} database driver.}
 
 \item{...}{Parameters to be bound to '?' characters in the query, similar to
 JDBC.}
+
+\item{list}{A list of extra parameters.}
 }
 \value{
 TRUE update was successful
 }
 \description{
 The \code{dbSendUpdateAsync()} function is used to send a data-altering
-statement to a MonetDB database, e.g. \code{CREATE TABLE} or \code{INSERT}.
-As a convenience feature, a placeholder (\code{?} character) can be used in
-the SQL statement, and bound to parameters given in the varargs group before
-execution. This is especially useful when scripting database updates, since
-the parameters will be automatically quoted.
+statement to a MonetDB database, e.g. \verb{CREATE TABLE} or \code{INSERT}.
+As a convenience feature, a placeholder (i.e. the \verb{?} character) can be used
+in the SQL statement, and bound to parameters given in the varargs group
+before execution. This is especially useful when scripting database updates,
+since the parameters will be automatically quoted.
 
 The \code{dbSendUpdateAsync()} function works in a similar way as
 \code{\link[=dbSendUpdate]{dbSendUpdate()}}, except that the former should be used
