@@ -92,8 +92,7 @@ if (is.null(getGeneric("dbTransaction"))) {
 #' if (run) dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
 #' if (run) dbRollback(conn)
 #' @export
-setMethod(
-  "dbTransaction", signature(conn = "MonetDBConnection"),
+setMethod("dbTransaction", signature(conn = "MonetDBConnection"),
   function(conn, ...) {
     dbBegin(conn)
     warning("dbTransaction() is deprecated, use dbBegin() from now.")

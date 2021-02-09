@@ -329,8 +329,7 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 #' if (run) dbDisconnect(db)
 #' @export
 #' @rdname dbSendQuery
-setMethod(
-  "dbSendQuery",
+setMethod("dbSendQuery",
   signature(conn = "MonetDBConnection", statement = "character"),
   function(conn, statement, ..., list = NULL, async = FALSE) {
     if (!is.null(list) || length(list(...))) {
@@ -444,8 +443,7 @@ setMethod("dbGetException", "MonetDBConnection", function(conn, ...) {
 # dbListFields()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod(
-  "dbListFields",
+setMethod("dbListFields",
   signature(conn = "MonetDBConnection", name = "character"),
   function(conn, name, ...) {
     if (!dbExistsTable(conn, name)) {
@@ -462,8 +460,7 @@ setMethod(
 # dbListTables()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod(
-  "dbListTables", "MonetDBConnection",
+setMethod("dbListTables", "MonetDBConnection",
   function(conn, ..., sys_tables = F, schema_names = F) {
     q <- paste(
       "SELECT schemas.name AS sn, tables.name AS tn",
@@ -473,7 +470,7 @@ setMethod(
     if (!sys_tables) {
       q <- paste0(q, " WHERE tables.system = FALSE ORDER BY sn, tn")
     }
-    df <- dbGetQuery(conn, q)
+    df <- DBI::dbGetQuery(conn, q)
     df$tn <- quoteIfNeeded(conn, df$tn, warn = F)
     res <- df$tn
     if (schema_names) {
@@ -489,15 +486,14 @@ setMethod(
 # dbReadTable()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod(
-  "dbReadTable",
+setMethod("dbReadTable",
   signature(conn = "MonetDBConnection", name = "character"),
   function(conn, name, ...) {
     name <- quoteIfNeeded(conn, name)
     if (!dbExistsTable(conn, name)) {
       stop(paste0("Unknown table: ", name))
     }
-    dbGetQuery(conn, paste0("SELECT * FROM ", name), ...)
+    DBI::dbGetQuery(conn, paste0("SELECT * FROM ", name), ...)
   }
 )
 
@@ -537,8 +533,7 @@ setMethod(
 #' dbWriteTable(conn, "iris", iris, temporary = T)
 #' @export
 #' @rdname dbWriteTable
-setMethod(
-  "dbWriteTable",
+setMethod("dbWriteTable",
   signature(conn = "MonetDBConnection", name = "character", value = "ANY"),
   function(conn, name, value, overwrite = FALSE, append = FALSE,
            csvdump = FALSE, transaction = TRUE, temporary = FALSE, ...) {
@@ -659,8 +654,7 @@ setMethod(
 # dbExistsTable()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod(
-  "dbExistsTable",
+setMethod("dbExistsTable",
   signature(conn = "MonetDBConnection", name = "character"),
   function(conn, name, ...) {
     name <- quoteIfNeeded(conn, name)
@@ -672,8 +666,7 @@ setMethod(
 # dbRemoveTable()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod(
-  "dbRemoveTable",
+setMethod("dbRemoveTable",
   signature(conn = "MonetDBConnection", name = "character"),
   function(conn, name, ...) {
     name <- quoteIfNeeded(conn, name)
@@ -746,8 +739,7 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #' dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 #' @export
 #' @rdname dbSendUpdate
-setMethod(
-  "dbSendUpdate",
+setMethod("dbSendUpdate",
   signature(conn = "MonetDBConnection", statement = "character"),
   function(conn, statement, ..., list = NULL, async = FALSE) {
     if (!is.null(list) || length(list(...))) {
@@ -807,8 +799,7 @@ if (is.null(getGeneric("dbSendUpdateAsync"))) {
 #' dbSendUpdateAsync(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 #' @export
 #' @rdname dbSendUpdateAsync
-setMethod(
-  "dbSendUpdateAsync",
+setMethod("dbSendUpdateAsync",
   signature(conn = "MonetDBConnection", statement = "character"),
   function(conn, statement, ..., list = NULL) {
     dbSendUpdate(conn, statement, async = TRUE)

@@ -3,6 +3,7 @@
 \docType{class}
 \name{MonetDBResult-class}
 \alias{MonetDBResult-class}
+\alias{fetch,MonetDBResult,numeric-method}
 \alias{dbClearResult,MonetDBResult-method}
 \alias{dbColumnInfo,MonetDBResult-method}
 \alias{dbFetch,MonetDBResult,numeric-method}
@@ -13,6 +14,8 @@
 \alias{dbIsValid,MonetDBResult-method}
 \title{MonetDBResult and methods.}
 \usage{
+\S4method{fetch}{MonetDBResult,numeric}(res, n = -1, ...)
+
 \S4method{dbClearResult}{MonetDBResult}(res, ...)
 
 \S4method{dbColumnInfo}{MonetDBResult}(res, ...)

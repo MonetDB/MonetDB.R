@@ -38,7 +38,7 @@ fetches and clears for you.
 run <- postgresHasDefault()
 
 library(DBI)
-if (run) db <- dbConnect(RPostgres::Postgres())
+if (run) db <- dbConnect(MonetDB.R::MonetDB.R())
 if (run) dbWriteTable(db, "usarrests", datasets::USArrests, temporary = TRUE)
 
 # Run query to get results as dataframe
