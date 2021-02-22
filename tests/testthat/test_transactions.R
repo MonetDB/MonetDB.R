@@ -10,7 +10,7 @@ test_that("we can commit a transaction", {
   dbWriteTable(conn, "mtcars", mtcars[1:5, ], transaction = F, overwrite = T)
   dbCommit(conn)
 
-  output <- dbListTables(conn)
+  output <- unlist(dbListTables(conn))
   expect_equal(grepl(output, "mtcars"), T)
   dbRemoveTable(conn, "mtcars")
 })

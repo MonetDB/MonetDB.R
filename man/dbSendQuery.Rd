@@ -37,19 +37,19 @@ fetches and clears for you.
 library(DBI)
 # Only run the examples on systems with the default MonetDB connection:
 if (foundDefaultMonetDBdatabase()) {
-  db <- dbConnect(MonetDB.R::MonetDB.R())
-  dbWriteTable(db, "usarrests", datasets::USArrests, temporary = TRUE)
+  conn <- dbConnect(MonetDB.R())
+  dbWriteTable(conn, "usarrests", datasets::USArrests, temporary = TRUE)
 
   # Run query to get results as dataframe
-  dbGetQuery(db, "SELECT * FROM usarrests LIMIT 3")
+  dbGetQuery(conn, "SELECT * FROM usarrests LIMIT 3")
 
   # Send query to pull requests in batches
-  res <- dbSendQuery(db, "SELECT * FROM usarrests")
+  res <- dbSendQuery(conn, "SELECT * FROM usarrests")
   dbFetch(res, n = 2)
   dbFetch(res, n = 2)
   dbHasCompleted(res)
   dbClearResult(res)
-  dbRemoveTable(db, "usarrests")
-  dbDisconnect(db)
+  dbRemoveTable(conn, "usarrests")
+  dbDisconnect(conn)
 }
 }

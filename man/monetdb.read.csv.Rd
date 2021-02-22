@@ -63,11 +63,14 @@ is running, not on the machine where the R client runs.
 }
 \examples{
 library(DBI)
-conn <- dbConnect(MonetDB.R::MonetDB(), dbname = "demo")
-file <- tempfile()
-write.table(iris, file, sep = ",", row.names = F)
-MonetDB.R::monetdb.read.csv(conn, file, "iris")
-
+# Only run the examples on systems with the default MonetDB connection:
+if (foundDefaultMonetDBdatabase()) {
+  conn <- dbConnect(MonetDB())
+  file <- tempfile()
+  write.table(iris, file, sep = ",", row.names = FALSE)
+  MonetDB.R::monetdb.read.csv(conn, file, "iris")
+  dbRemoveTable(conn, "iris")
+}
 }
 \seealso{
 \link[utils:read.table]{utils::read.csv}

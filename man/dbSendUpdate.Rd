@@ -29,10 +29,14 @@ execution. This is especially useful when scripting database updates, since
 the parameters will be automatically quoted.
 }
 \examples{
-conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
-dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
-dbSendUpdate(conn, "DROP TABLE foo")
+library(DBI)
+# Only run the examples on systems with the default MonetDB connection:
+if (foundDefaultMonetDBdatabase()) {
+  conn <- dbConnect(MonetDB.R())
+  dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+  dbSendUpdate(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
+  dbSendUpdate(conn, "DROP TABLE foo")
+}
 }
 \seealso{
 \code{\link[=dbSendUpdateAsync]{dbSendUpdateAsync()}} \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}

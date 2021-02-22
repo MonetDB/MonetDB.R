@@ -33,7 +33,7 @@ end the transaction by either committing or rolling back the changes.
 library(DBI)
 # Only run the examples on systems with the default MonetDB connection:
 if (foundDefaultMonetDBdatabase()) {
-  con <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
+  con <- dbConnect(MonetDB.R())
   dbWriteTable(con, "USarrests", datasets::USArrests, temporary = TRUE)
   dbGetQuery(con, 'SELECT count(*) from "USarrests"')
 

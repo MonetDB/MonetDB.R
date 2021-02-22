@@ -15,12 +15,12 @@ setClass("MonetDBConnection",
 )
 
 # quoting
-quoteIfNeeded <- function(conn, x, warn = T, ...) {
+quoteIfNeeded <- function(conn, x, warn = F, ...) {
   x <- as.character(x)
   chars <- !grepl("^[a-z_][a-z0-9_]*$", x, perl = T) &
     !grepl("^\"[^\"]*\"$", x, perl = T)
-  if (any(chars) && warn) {
-    warning(
+  if (any(chars) && (warn || getOption("monetdb.debug.query", F))) {
+    message(
       "Identifier(s) ",
       paste("\"", x[chars], "\"", collapse = ", ", sep = ""),
       paste(
@@ -30,8 +30,8 @@ quoteIfNeeded <- function(conn, x, warn = T, ...) {
     )
   }
   reserved <- toupper(x) %in% conn@connenv$keywords
-  if (any(reserved) && warn) {
-    warning(
+  if (any(reserved) && (warn || getOption("monetdb.debug.query", F))) {
+    message(
       "Identifier(s) ",
       paste("\"", x[reserved], "\"", collapse = ", ", sep = ""),
       " are reserved SQL keywords and need(s) to be quoted in queries."
@@ -314,20 +314,20 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 #' library(DBI)
 #' # Only run the examples on systems with the default MonetDB connection:
 #' if (foundDefaultMonetDBdatabase()) {
-#'   db <- dbConnect(MonetDB.R::MonetDB.R())
-#'   dbWriteTable(db, "usarrests", datasets::USArrests, temporary = TRUE)
+#'   conn <- dbConnect(MonetDB.R())
+#'   dbWriteTable(conn, "usarrests", datasets::USArrests, temporary = TRUE)
 #'
 #'   # Run query to get results as dataframe
-#'   dbGetQuery(db, "SELECT * FROM usarrests LIMIT 3")
+#'   dbGetQuery(conn, "SELECT * FROM usarrests LIMIT 3")
 #'
 #'   # Send query to pull requests in batches
-#'   res <- dbSendQuery(db, "SELECT * FROM usarrests")
+#'   res <- dbSendQuery(conn, "SELECT * FROM usarrests")
 #'   dbFetch(res, n = 2)
 #'   dbFetch(res, n = 2)
 #'   dbHasCompleted(res)
 #'   dbClearResult(res)
-#'   dbRemoveTable(db, "usarrests")
-#'   dbDisconnect(db)
+#'   dbRemoveTable(conn, "usarrests")
+#'   dbDisconnect(conn)
 #' }
 #' @export
 #' @rdname dbSendQuery
@@ -476,10 +476,10 @@ setMethod(
       q <- paste0(q, " WHERE tables.system = FALSE ORDER BY sn, tn")
     }
     df <- DBI::dbGetQuery(conn, q)
-    df$tn <- quoteIfNeeded(conn, df$tn, warn = F)
+    df$tn <- quoteIfNeeded(conn, df$tn)
     res <- df$tn
     if (schema_names) {
-      df$sn <- quoteIfNeeded(conn, df$sn, warn = F)
+      df$sn <- quoteIfNeeded(conn, df$sn)
       res <- paste0(df$sn, ".", df$tn)
     }
     as.character(res)
@@ -532,11 +532,16 @@ setMethod(
 #' @return TRUE if the writetable command was successful
 #'
 #' @examples
-#' dbWriteTable(conn, "mtcars", mtcars[1:5, ])
-#' dbWriteTable(conn, "mtcars", mtcars[5:10, ], overwrite = T)
-#' dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = T)
-#' dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = T, csvdump = T)
-#' dbWriteTable(conn, "iris", iris, temporary = T)
+#' library(DBI)
+#' # Only run the examples on systems with the default MonetDB connection:
+#' if (foundDefaultMonetDBdatabase()) {
+#'   conn <- dbConnect(MonetDB.R())
+#'   dbWriteTable(conn, "mtcars", mtcars[1:5, ])
+#'   dbWriteTable(conn, "mtcars", mtcars[5:10, ], overwrite = TRUE)
+#'   dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = TRUE)
+#'   dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = TRUE, csvdump = TRUE)
+#'   dbWriteTable(conn, "iris", iris, append = TRUE, temporary = TRUE)
+#' }
 #' @export
 #' @rdname dbWriteTable
 setMethod(
@@ -744,10 +749,14 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #' @seealso [dbSendUpdateAsync()] [DBI::dbSendQuery()]
 #'
 #' @examples
-#' conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
-#' dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-#' dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
-#' dbSendUpdate(conn, "DROP TABLE foo")
+#' library(DBI)
+#' # Only run the examples on systems with the default MonetDB connection:
+#' if (foundDefaultMonetDBdatabase()) {
+#'   conn <- dbConnect(MonetDB.R())
+#'   dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+#'   dbSendUpdate(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
+#'   dbSendUpdate(conn, "DROP TABLE foo")
+#' }
 #' @export
 #' @rdname dbSendUpdate
 setMethod(
@@ -806,10 +815,14 @@ if (is.null(getGeneric("dbSendUpdateAsync"))) {
 #' @seealso [dbSendUpdate()] [DBI::dbSendQuery()]
 #'
 #' @examples
-#' conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
-#' dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-#' dbSendUpdateAsync(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
-#' dbSendUpdate(conn, "DROP TABLE foo")
+#' library(DBI)
+#' # Only run the examples on systems with the default MonetDB connection:
+#' if (foundDefaultMonetDBdatabase()) {
+#'   conn <- dbConnect(MonetDB.R())
+#'   dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+#'   dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
+#'   dbSendUpdateAsync(conn, "DROP TABLE foo")
+#' }
 #' @export
 #' @rdname dbSendUpdateAsync
 setMethod(

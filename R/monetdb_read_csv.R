@@ -40,11 +40,14 @@
 #'
 #' @examples
 #' library(DBI)
-#' conn <- dbConnect(MonetDB.R::MonetDB(), dbname = "demo")
-#' file <- tempfile()
-#' write.table(iris, file, sep = ",", row.names = F)
-#' MonetDB.R::monetdb.read.csv(conn, file, "iris")
-#'
+#' # Only run the examples on systems with the default MonetDB connection:
+#' if (foundDefaultMonetDBdatabase()) {
+#'   conn <- dbConnect(MonetDB())
+#'   file <- tempfile()
+#'   write.table(iris, file, sep = ",", row.names = FALSE)
+#'   MonetDB.R::monetdb.read.csv(conn, file, "iris")
+#'   dbRemoveTable(conn, "iris")
+#' }
 #' @name monetdb.read.csv
 #' @include MonetDBConnection.R MonetDBResult.R
 #' @importFrom utils read.csv write.table

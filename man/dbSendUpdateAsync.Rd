@@ -35,10 +35,14 @@ when the database update is called from finalisers, to avoid very esoteric
 concurrency problems. Here, the update is not guaranteed
 }
 \examples{
-conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
-dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-dbSendUpdateAsync(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
-dbSendUpdate(conn, "DROP TABLE foo")
+library(DBI)
+# Only run the examples on systems with the default MonetDB connection:
+if (foundDefaultMonetDBdatabase()) {
+  conn <- dbConnect(MonetDB.R())
+  dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+  dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
+  dbSendUpdateAsync(conn, "DROP TABLE foo")
+}
 }
 \seealso{
 \code{\link[=dbSendUpdate]{dbSendUpdate()}} \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}

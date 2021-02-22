@@ -31,7 +31,7 @@ setMethod("isIdCurrent", signature(dbObj = "MonetDBConnection"),
 )
 
 if (is.null(getGeneric("initExtension"))) {
-setGeneric("initExtension",
+  setGeneric("initExtension",
     function(dbObj, ...) standardGeneric("initExtension")
   )
 }

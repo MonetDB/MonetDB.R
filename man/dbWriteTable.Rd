@@ -45,9 +45,14 @@ TRUE if the writetable command was successful
 Write, append or overwrite a data frame to a database table
 }
 \examples{
-dbWriteTable(conn, "mtcars", mtcars[1:5, ])
-dbWriteTable(conn, "mtcars", mtcars[5:10, ], overwrite = T)
-dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = T)
-dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = T, csvdump = T)
-dbWriteTable(conn, "iris", iris, temporary = T)
+library(DBI)
+# Only run the examples on systems with the default MonetDB connection:
+if (foundDefaultMonetDBdatabase()) {
+  conn <- dbConnect(MonetDB.R())
+  dbWriteTable(conn, "mtcars", mtcars[1:5, ])
+  dbWriteTable(conn, "mtcars", mtcars[5:10, ], overwrite = TRUE)
+  dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = TRUE)
+  dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = TRUE, csvdump = TRUE)
+  dbWriteTable(conn, "iris", iris, append = TRUE, temporary = TRUE)
+}
 }
