@@ -10,24 +10,24 @@
 #' @param ... Unused, for extensibility.
 #' @return A boolean, indicating success or failure.
 #' @examples
-#' # Only run the examples on systems with MonetDB connection:
-#' run <- monetdbHasDefault()
-#'
 #' library(DBI)
-#' if (run) con <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
-#' if (run) dbWriteTable(con, "USarrests", datasets::USArrests, temporary = TRUE)
-#' if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+#' # Only run the examples on systems with the default MonetDB connection:
+#' if (foundDefaultMonetDBdatabase()) {
+#'   con <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
+#'   dbWriteTable(con, "USarrests", datasets::USArrests, temporary = TRUE)
+#'   dbGetQuery(con, 'SELECT count(*) from "USarrests"')
 #'
-#' if (run) dbBegin(con)
-#' if (run) dbExecute(con, 'DELETE from "USarrests" WHERE "Murder" > 1')
-#' if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
-#' if (run) dbRollback(con)
+#'   dbBegin(con)
+#'   dbExecute(con, 'DELETE from "USarrests" WHERE "Murder" > 1')
+#'   dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+#'   dbRollback(con)
 #'
-#' # Rolling back changes leads to original count
-#' if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+#'   # Rolling back changes leads to original count
+#'   dbGetQuery(con, 'SELECT count(*) from "USarrests"')
 #'
-#' if (run) dbRemoveTable(con, "USarrests")
-#' if (run) dbDisconnect(con)
+#'   dbRemoveTable(con, "USarrests")
+#'   dbDisconnect(con)
+#' }
 #' @include MonetDBConnection.R
 #' @name monetdb-transactions
 NULL
@@ -79,18 +79,19 @@ if (is.null(getGeneric("dbTransaction"))) {
 #' @return TRUE if the transaction was successful
 #'
 #' @examples
-#' # Only run the examples on systems with MonetDB connection:
-#' run <- monetdbHasDefault()
-#'
 #' library(DBI)
-#' if (run) conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
-#' if (run) dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-#' if (run) dbTransaction(conn)
-#' if (run) dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
-#' if (run) dbCommit(conn)
-#' if (run) dbTransaction(conn)
-#' if (run) dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
-#' if (run) dbRollback(conn)
+#' # Only run the examples on systems with the default MonetDB connection:
+#' if (foundDefaultMonetDBdatabase()) {
+#'   conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
+#'   dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+#'   dbTransaction(conn)
+#'   dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
+#'   dbCommit(conn)
+#'   dbTransaction(conn)
+#'   dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
+#'   dbRollback(conn)
+#'   dbSendUpdate(conn, "DROP TABLE foo")
+#' }
 #' @export
 setMethod("dbTransaction", signature(conn = "MonetDBConnection"),
   function(conn, ...) {

@@ -38,6 +38,7 @@ concurrency problems. Here, the update is not guaranteed
 conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
 dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
 dbSendUpdateAsync(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
+dbSendUpdate(conn, "DROP TABLE foo")
 }
 \seealso{
 \code{\link[=dbSendUpdate]{dbSendUpdate()}} \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}

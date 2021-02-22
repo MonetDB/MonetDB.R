@@ -34,24 +34,22 @@ results (and they'll fit in memory) use \code{dbGetQuery()} which sends,
 fetches and clears for you.
 }
 \examples{
-# For running the examples on systems without PostgreSQL connection:
-run <- postgresHasDefault()
-
 library(DBI)
-if (run) db <- dbConnect(MonetDB.R::MonetDB.R())
-if (run) dbWriteTable(db, "usarrests", datasets::USArrests, temporary = TRUE)
+# Only run the examples on systems with the default MonetDB connection:
+if (foundDefaultMonetDBdatabase()) {
+  db <- dbConnect(MonetDB.R::MonetDB.R())
+  dbWriteTable(db, "usarrests", datasets::USArrests, temporary = TRUE)
 
-# Run query to get results as dataframe
-if (run) dbGetQuery(db, "SELECT * FROM usarrests LIMIT 3")
+  # Run query to get results as dataframe
+  dbGetQuery(db, "SELECT * FROM usarrests LIMIT 3")
 
-# Send query to pull requests in batches
-if (run) res <- dbSendQuery(db, "SELECT * FROM usarrests")
-if (run) dbFetch(res, n = 2)
-if (run) dbFetch(res, n = 2)
-if (run) dbHasCompleted(res)
-if (run) dbClearResult(res)
-
-if (run) dbRemoveTable(db, "usarrests")
-
-if (run) dbDisconnect(db)
+  # Send query to pull requests in batches
+  res <- dbSendQuery(db, "SELECT * FROM usarrests")
+  dbFetch(res, n = 2)
+  dbFetch(res, n = 2)
+  dbHasCompleted(res)
+  dbClearResult(res)
+  dbRemoveTable(db, "usarrests")
+  dbDisconnect(db)
+}
 }

@@ -92,8 +92,8 @@ test_that("dbWriteTable with csvdump works as expected", {
 test_that("we can drop a table", {
   dbRemoveTable(conn, "mtcars")
   expect_equal(dbExistsTable(conn, "mtcars"), F)
-  dbRemoveTable(conn, "foo")
-  dbRemoveTable(conn, "foo1")
+  #dbRemoveTable(conn, "foo")
+  #dbRemoveTable(conn, "foo1")
 })
 
 test_that("csv import works", {

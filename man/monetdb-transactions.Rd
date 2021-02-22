@@ -30,22 +30,22 @@ Functions to begin, commit or rollback SQL transactions
 end the transaction by either committing or rolling back the changes.
 }
 \examples{
-# Only run the examples on systems with MonetDB connection:
-run <- monetdbHasDefault()
-
 library(DBI)
-if (run) con <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
-if (run) dbWriteTable(con, "USarrests", datasets::USArrests, temporary = TRUE)
-if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+# Only run the examples on systems with the default MonetDB connection:
+if (foundDefaultMonetDBdatabase()) {
+  con <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
+  dbWriteTable(con, "USarrests", datasets::USArrests, temporary = TRUE)
+  dbGetQuery(con, 'SELECT count(*) from "USarrests"')
 
-if (run) dbBegin(con)
-if (run) dbExecute(con, 'DELETE from "USarrests" WHERE "Murder" > 1')
-if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
-if (run) dbRollback(con)
+  dbBegin(con)
+  dbExecute(con, 'DELETE from "USarrests" WHERE "Murder" > 1')
+  dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+  dbRollback(con)
 
-# Rolling back changes leads to original count
-if (run) dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+  # Rolling back changes leads to original count
+  dbGetQuery(con, 'SELECT count(*) from "USarrests"')
 
-if (run) dbRemoveTable(con, "USarrests")
-if (run) dbDisconnect(con)
+  dbRemoveTable(con, "USarrests")
+  dbDisconnect(con)
+}
 }

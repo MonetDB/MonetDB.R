@@ -26,16 +26,17 @@ are not to be persisted in the database, you can use \code{\link[=dbRollback]{db
 all the changes since \code{dbTransaction()} was called.
 }
 \examples{
-# Only run the examples on systems with MonetDB connection:
-run <- monetdbHasDefault()
-
 library(DBI)
-if (run) conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
-if (run) dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-if (run) dbTransaction(conn)
-if (run) dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
-if (run) dbCommit(conn)
-if (run) dbTransaction(conn)
-if (run) dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
-if (run) dbRollback(conn)
+# Only run the examples on systems with the default MonetDB connection:
+if (foundDefaultMonetDBdatabase()) {
+  conn <- dbConnect(MonetDB.R(), "monetdb://localhost/demo")
+  dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+  dbTransaction(conn)
+  dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
+  dbCommit(conn)
+  dbTransaction(conn)
+  dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
+  dbRollback(conn)
+  dbSendUpdate(conn, "DROP TABLE foo")
+}
 }
