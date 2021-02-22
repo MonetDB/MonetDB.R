@@ -3,7 +3,7 @@ library(DBI)
 conn <- dbConnect(MonetDB.R::MonetDB())
 
 tsize <- function(conn, tname) {
-  as.integer(dbGetQuery(conn, paste0("SELECT COUNT(*) FROM ", tname))[[1]])
+  as.integer(DBI::dbGetQuery(conn, paste0("SELECT COUNT(*) FROM ", tname))[[1]])
 }
 
 test_that("we can write a table to the database", {
@@ -12,8 +12,6 @@ test_that("we can write a table to the database", {
 })
 
 test_that("the right keywords are used", {
-  keywords <- dbGetQuery(conn, "SELECT * FROM sys.keywords")
-  reserved_monetdb_keywords <<- sort(unique(array(c(unlist(keywords)))))
   all_keywords <- paste(
     "ADD, ADMIN, AFTER, AGGREGATE, ALL, ALTER, ALWAYS, ANALYZE, AND, ANY, ",
     "ASC, ASYMMETRIC, AT, ATOMIC, AUTHORIZATION, AUTO_INCREMENT, BEFORE, ",
@@ -49,22 +47,23 @@ test_that("the right keywords are used", {
     "UNIQUE, UPDATE, USER, USING, VALUES, VARCHAR, VARYING, VIEW, WEEK, WHEN, ",
     "WHERE, WHILE, WINDOW, WITH, WORK, WRITE, XMLAGG, XMLATTRIBUTES, ",
     "XMLCOMMENT, XMLCONCAT, XMLDOCUMENT, XMLELEMENT, XMLFOREST, ",
-    "XMLNAMESPACES, XMLPARSE, XMLPI, XMLQUERY, XMLSCHEMA, XMLTEXT, ",
+    "XMLNAMESPACES, XMLPARSE, XkMLPI, XMLQUERY, XMLSCHEMA, XMLTEXT, ",
     "XMLVALIDATE, YEAR, ZONE"
   )
 
-  expect_true(length(reserved_monetdb_keywords) > 0)
-  expect_true(paste(reserved_monetdb_keywords, collapse = ", ") == all_keywords)
+  keywords <- conn@connenv$keywords
+  expect_true(length(keywords) > 0)
+  expect_true(paste(keywords, collapse = ", ") == all_keywords)
 })
 
 test_that("special characters work", {
   table_name <- "specialcharsfoo"
   pi <- enc2utf8("U+03C0")
 
-  dbExecute(conn, paste0("CREATE TABLE ", table_name, "(x TEXT);"))
-  dbExecute(conn, paste0("INSERT INTO ", table_name, " VALUES ('U+03C0'); "))
+  DBI::dbExecute(conn, paste0("CREATE TABLE ", table_name, "(x TEXT);"))
+  DBI::dbExecute(conn, paste0("INSERT INTO ", table_name, " VALUES ('U+03C0'); "))
 
-  expect_equal(dbGetQuery(conn, "SELECT * FROM specialcharsfoo")$x, pi)
+  expect_equal(DBI::dbGetQuery(conn, "SELECT * FROM specialcharsfoo")$x, pi)
 
   dbRemoveTable(conn, "specialcharsfoo")
 })
@@ -163,18 +162,18 @@ test_that("strings can have exotic characters", {
   expect_true(dbExistsTable(conn, tname))
   dbSendQuery(conn, "INSERT INTO monetdbtest VALUES ('Роман Mühleisen')")
   expect_equal(
-    "Роман Mühleisen", dbGetQuery(conn, "SELECT a FROM monetdbtest")$a[[1]])
+    "Роман Mühleisen", DBI::dbGetQuery(conn, "SELECT a FROM monetdbtest")$a[[1]])
   dbSendQuery(conn, "DELETE FROM monetdbtest")
   MonetDB.R::dbSendUpdate(
     conn, "INSERT INTO monetdbtest (a) VALUES (?)", "Роман Mühleisen")
   expect_equal(
-    "Роман Mühleisen", dbGetQuery(conn, "SELECT a FROM monetdbtest")$a[[1]])
+    "Роман Mühleisen", DBI::dbGetQuery(conn, "SELECT a FROM monetdbtest")$a[[1]])
   dbRemoveTable(conn, tname)
 })
 
 test_that("we can create a temporary table, and that its actually temporary", {
   table_name <- "fooTempTable"
-  dbCreateTable(conn, table_name, iris, temporary = T)
+  DBI::dbCreateTable(conn, table_name, iris, temporary = T)
   expect_equal(dbExistsTable(conn, table_name), T)
 
   dbDisconnect(conn)

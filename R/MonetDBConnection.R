@@ -29,7 +29,7 @@ quoteIfNeeded <- function(conn, x, warn = T, ...) {
       )
     )
   }
-  reserved <- toupper(x) %in% reserved_monetdb_keywords
+  reserved <- toupper(x) %in% conn@connenv$keywords
   if (any(reserved) && warn) {
     warning(
       "Identifier(s) ",
@@ -39,7 +39,7 @@ quoteIfNeeded <- function(conn, x, warn = T, ...) {
   }
   qts <- reserved | chars
   if (any(qts)) {
-    x[qts] <- dbQuoteIdentifier(conn, x[qts])
+    x[qts] <- DBI::dbQuoteIdentifier(conn, x[qts])
   }
   x
 }
@@ -262,7 +262,7 @@ setMethod("dbConnect", "MonetDBDriver", function(drv,
 
   # Fill the MonetDB keywords
   keywords <- DBI::dbGetQuery(conn, "SELECT * FROM sys.keywords")
-  reserved_monetdb_keywords <<- sort(unique(array(c(unlist(keywords)))))
+  connenv$keywords <- sort(unique(array(c(unlist(keywords)))))
 
   if (getOption("monetdb.sequential", F)) {
     message("MonetDB: Switching to single-threaded query execution.")
@@ -449,7 +449,7 @@ setMethod("dbListFields",
     if (!dbExistsTable(conn, name)) {
       stop(paste0("Unknown table: ", name))
     }
-    df <- dbGetQuery(conn, paste0(
+    df <- DBI::dbGetQuery(conn, paste0(
       "SELECT columns.name AS name FROM sys.columns JOIN sys.tables ON ",
       "columns.table_id = tables.id WHERE tables.name = '", name, "';"
     ))
