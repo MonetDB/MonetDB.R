@@ -97,21 +97,21 @@ quoteIfNeeded <- function(conn, x, warn = T, ...) {
 #' @export
 #' @rdname dbDataType
 setMethod("dbDataType",
-          signature(dbObj = "MonetDBConnection", obj = "ANY"),
-          function(dbObj, obj, ...) {
-            if (is.logical(obj)) {
-              "BOOLEAN"
-            } else if (is.integer(obj)) {
-              "INTEGER"
-            } else if (is.numeric(obj)) {
-              "DOUBLE PRECISION"
-            } else if (is.raw(obj)) {
-              "BLOB"
-            } else {
-              "STRING"
-            }
-          },
-          valueClass = "character"
+  signature(dbObj = "MonetDBConnection", obj = "ANY"),
+  function(dbObj, obj, ...) {
+    if (is.logical(obj)) {
+      "BOOLEAN"
+    } else if (is.integer(obj)) {
+      "INTEGER"
+    } else if (is.numeric(obj)) {
+      "DOUBLE PRECISION"
+    } else if (is.raw(obj)) {
+      "BLOB"
+    } else {
+      "STRING"
+    }
+  },
+  valueClass = "character"
 )
 
 # DBIdriver > dbConnect()
@@ -261,8 +261,12 @@ setMethod("dbConnect", "MonetDBDriver", function(drv,
   conn <- new("MonetDBConnection", connenv = connenv)
 
   # Fill the MonetDB keywords
-  keywords <- DBI::dbGetQuery(conn, "SELECT * FROM sys.keywords")
-  connenv$keywords <- sort(unique(array(c(unlist(keywords)))))
+  connenv$keywords <- list(unlist(
+    DBI::dbGetQuery(
+      conn,
+      "SELECT DISTINCT * FROM sys.keywords ORDER BY keyword"
+    )
+  ))
 
   if (getOption("monetdb.sequential", F)) {
     message("MonetDB: Switching to single-threaded query execution.")
@@ -329,7 +333,8 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 #' if (run) dbDisconnect(db)
 #' @export
 #' @rdname dbSendQuery
-setMethod("dbSendQuery",
+setMethod(
+  "dbSendQuery",
   signature(conn = "MonetDBConnection", statement = "character"),
   function(conn, statement, ..., list = NULL, async = FALSE) {
     if (!is.null(list) || length(list(...))) {
@@ -350,7 +355,7 @@ setMethod("dbSendQuery",
     tryCatch(
       {
         mresp <- .mapiRequest(conn, paste0("s", statement, "\n;"),
-                              async = async
+          async = async
         )
         resp <- .mapiParseResponse(mresp)
       },
@@ -383,7 +388,7 @@ setMethod("dbSendQuery",
       env$open <- TRUE
     }
     if (resp$type == Q_UPDATE || resp$type == Q_CREATE ||
-        resp$type == MSG_ASYNC_REPLY || resp$type == MSG_PROMPT) {
+      resp$type == MSG_ASYNC_REPLY || resp$type == MSG_PROMPT) {
       env$success <- TRUE
       env$conn <- conn
       env$query <- statement
@@ -443,7 +448,8 @@ setMethod("dbGetException", "MonetDBConnection", function(conn, ...) {
 # dbListFields()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod("dbListFields",
+setMethod(
+  "dbListFields",
   signature(conn = "MonetDBConnection", name = "character"),
   function(conn, name, ...) {
     if (!dbExistsTable(conn, name)) {
@@ -460,7 +466,8 @@ setMethod("dbListFields",
 # dbListTables()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod("dbListTables", "MonetDBConnection",
+setMethod(
+  "dbListTables", "MonetDBConnection",
   function(conn, ..., sys_tables = F, schema_names = F) {
     q <- paste(
       "SELECT schemas.name AS sn, tables.name AS tn",
@@ -486,7 +493,8 @@ setMethod("dbListTables", "MonetDBConnection",
 # dbReadTable()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod("dbReadTable",
+setMethod(
+  "dbReadTable",
   signature(conn = "MonetDBConnection", name = "character"),
   function(conn, name, ...) {
     name <- quoteIfNeeded(conn, name)
@@ -533,7 +541,8 @@ setMethod("dbReadTable",
 #' dbWriteTable(conn, "iris", iris, temporary = T)
 #' @export
 #' @rdname dbWriteTable
-setMethod("dbWriteTable",
+setMethod(
+  "dbWriteTable",
   signature(conn = "MonetDBConnection", name = "character", value = "ANY"),
   function(conn, name, value, overwrite = FALSE, append = FALSE,
            csvdump = FALSE, transaction = TRUE, temporary = FALSE, ...) {
@@ -558,8 +567,8 @@ setMethod("dbWriteTable",
     if (length(value[[1]]) > 0) {
       if (!is.data.frame(value)) {
         value <- as.data.frame(value,
-                               row.names = 1:length(value[[1]]),
-                               stringsAsFactors = F
+          row.names = 1:length(value[[1]]),
+          stringsAsFactors = F
         )
       }
     } else {
@@ -612,8 +621,8 @@ setMethod("dbWriteTable",
     if (csvdump) {
       tmp <- tempfile(fileext = ".csv")
       write.table(value, tmp,
-                  sep = ",", quote = TRUE, row.names = FALSE,
-                  col.names = FALSE, na = "", fileEncoding = "UTF-8"
+        sep = ",", quote = TRUE, row.names = FALSE,
+        col.names = FALSE, na = "", fileEncoding = "UTF-8"
       )
       dbSendQuery(conn, paste0(
         "COPY INTO ", qname, " FROM '", tmp,
@@ -623,7 +632,7 @@ setMethod("dbWriteTable",
     }
     else {
       vins <- paste("(", paste(rep("?", length(value)), collapse = ", "), ")",
-                    sep = ""
+        sep = ""
       )
       # chunk some inserts together so we do not need to do a round trip for
       # every one
@@ -654,7 +663,8 @@ setMethod("dbWriteTable",
 # dbExistsTable()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod("dbExistsTable",
+setMethod(
+  "dbExistsTable",
   signature(conn = "MonetDBConnection", name = "character"),
   function(conn, name, ...) {
     name <- quoteIfNeeded(conn, name)
@@ -666,7 +676,8 @@ setMethod("dbExistsTable",
 # dbRemoveTable()
 #' @export
 #' @rdname MonetDBConnection-class
-setMethod("dbRemoveTable",
+setMethod(
+  "dbRemoveTable",
   signature(conn = "MonetDBConnection", name = "character"),
   function(conn, name, ...) {
     name <- quoteIfNeeded(conn, name)
@@ -714,8 +725,9 @@ setMethod("dbIsValid", "MonetDBConnection", function(dbObj, ...) {
 if (is.null(getGeneric("dbSendUpdate"))) {
   setGeneric(
     "dbSendUpdate",
-    function(conn, statement, ..., async = FALSE)
+    function(conn, statement, ..., async = FALSE) {
       standardGeneric("dbSendUpdate")
+    }
   )
 }
 #' @name dbSendUpdate
@@ -739,7 +751,8 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #' dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 #' @export
 #' @rdname dbSendUpdate
-setMethod("dbSendUpdate",
+setMethod(
+  "dbSendUpdate",
   signature(conn = "MonetDBConnection", statement = "character"),
   function(conn, statement, ..., list = NULL, async = FALSE) {
     if (!is.null(list) || length(list(...))) {
@@ -799,7 +812,8 @@ if (is.null(getGeneric("dbSendUpdateAsync"))) {
 #' dbSendUpdateAsync(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 #' @export
 #' @rdname dbSendUpdateAsync
-setMethod("dbSendUpdateAsync",
+setMethod(
+  "dbSendUpdateAsync",
   signature(conn = "MonetDBConnection", statement = "character"),
   function(conn, statement, ..., list = NULL) {
     dbSendUpdate(conn, statement, async = TRUE)

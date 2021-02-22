@@ -11,57 +11,13 @@ test_that("we can write a table to the database", {
   expect_equal(dbExistsTable(conn, "mtcars"), T)
 })
 
-test_that("the right keywords are used", {
-  all_keywords <- paste(
-    "ADD, ADMIN, AFTER, AGGREGATE, ALL, ALTER, ALWAYS, ANALYZE, AND, ANY, ",
-    "ASC, ASYMMETRIC, AT, ATOMIC, AUTHORIZATION, AUTO_INCREMENT, BEFORE, ",
-    "BEGIN, BEST, BETWEEN, BIGINT, BIGSERIAL, BINARY, BLOB, BY, CACHE, CALL, ",
-    "CASCADE, CASE, CAST, CENTURY, CHAIN, CHAR, CHARACTER, CHECK, CLIENT, ",
-    "CLOB, COALESCE, COLUMN, COMMENT, COMMIT, COMMITTED, CONSTRAINT, ",
-    "CONTINUE, CONVERT, COPY, CORRESPONDING, CREATE, CROSS, CUBE, CURRENT, ",
-    "CURRENT_DATE, CURRENT_ROLE, CURRENT_TIME, CURRENT_TIMESTAMP, ",
-    "CURRENT_USER, CYCLE, DATA, DATE, DAY, DEALLOCATE, DEBUG, DEC, DECADE, ",
-    "DECIMAL, DECLARE, DEFAULT, DELETE, DELIMITERS, DESC, DIAGNOSTICS, ",
-    "DISTINCT, DO, DOUBLE, DOW, DOY, DROP, EACH, EFFORT, ELSE, ELSEIF, ",
-    "ENCRYPTED, END, ESCAPE, EVERY, EXCEPT, EXCLUDE, EXEC, EXECUTE, EXISTS, ",
-    "EXPLAIN, EXTERNAL, EXTRACT, FALSE, FIRST, FLOAT, FOLLOWING, FOR, ",
-    "FOREIGN, FROM, FULL, FUNCTION, FWF, GENERATED, GLOBAL, GRANT, GROUP, ",
-    "GROUPING, GROUPS, HAVING, HOUR, HUGEINT, IDENTITY, IF, ILIKE, IN, ",
-    "INCREMENT, INDEX, INNER, INSERT, INT, INTEGER, INTERSECT, INTERVAL, ",
-    "INTO, IS, ISOLATION, JOIN, KEY, LANGUAGE, LARGE, LAST, LATERAL, LEFT, ",
-    "LEVEL, LIKE, LIMIT, LOADER, LOCAL, LOCALTIME, LOCALTIMESTAMP, LOCKED, ",
-    "MATCH, MATCHED, MAXVALUE, MEDIUMINT, MERGE, MINUTE, MINVALUE, MONTH, ",
-    "NAME, NATURAL, NEW, NEXT, NO, NOT, NOW, NULLIF, NULLS, NUMERIC, OBJECT, ",
-    "OF, OFFSET, OLD, ON, ONLY, OPTION, OPTIONS, OR, ORDER, OTHERS, OUTER, ",
-    "OVER, PARTIAL, PARTITION, PASSWORD, PLAN, POSITION, PRECEDING, ",
-    "PRECISION, PREP, PREPARE, PRESERVE, PRIMARY, PRIVILEGES, PROCEDURE, ",
-    "PUBLIC, QUARTER, RANGE, READ, REAL, RECORDS, REFERENCES, REFERENCING, ",
-    "RELEASE, REMOTE, RENAME, REPEATABLE, REPLACE, REPLICA, RESTART, ",
-    "RESTRICT, RETURN, RETURNS, REVOKE, RIGHT, ROLLBACK, ROLLUP, ROWS, ",
-    "SAMPLE, SAVEPOINT, SCHEMA, SECOND, SEED, SELECT, SEQUENCE, SERIAL, ",
-    "SERIALIZABLE, SERVER, SESSION, SESSION_USER, SET, SETS, SIMPLE, SIZE, ",
-    "SMALLINT, SOME, SPLIT_PART, START, STATEMENT, STDIN, STDOUT, STORAGE, ",
-    "STREAM, STRING, SUBSTRING, SYMMETRIC, TABLE, TEMP, TEMPORARY, TEXT, ",
-    "THEN, TIES, TIME, TIMESTAMP, TINYINT, TO, TRACE, TRANSACTION, TRIGGER, ",
-    "TRUE, TRUNCATE, TYPE, UNBOUNDED, UNCOMMITTED, UNENCRYPTED, UNION, ",
-    "UNIQUE, UPDATE, USER, USING, VALUES, VARCHAR, VARYING, VIEW, WEEK, WHEN, ",
-    "WHERE, WHILE, WINDOW, WITH, WORK, WRITE, XMLAGG, XMLATTRIBUTES, ",
-    "XMLCOMMENT, XMLCONCAT, XMLDOCUMENT, XMLELEMENT, XMLFOREST, ",
-    "XMLNAMESPACES, XMLPARSE, XkMLPI, XMLQUERY, XMLSCHEMA, XMLTEXT, ",
-    "XMLVALIDATE, YEAR, ZONE"
-  )
-
-  keywords <- conn@connenv$keywords
-  expect_true(length(keywords) > 0)
-  expect_true(paste(keywords, collapse = ", ") == all_keywords)
-})
-
 test_that("special characters work", {
   table_name <- "specialcharsfoo"
   pi <- enc2utf8("U+03C0")
 
   DBI::dbExecute(conn, paste0("CREATE TABLE ", table_name, "(x TEXT);"))
-  DBI::dbExecute(conn, paste0("INSERT INTO ", table_name, " VALUES ('U+03C0'); "))
+  DBI::dbExecute(conn,
+                 paste0("INSERT INTO ", table_name, " VALUES ('U+03C0'); "))
 
   expect_equal(DBI::dbGetQuery(conn, "SELECT * FROM specialcharsfoo")$x, pi)
 
@@ -162,12 +118,15 @@ test_that("strings can have exotic characters", {
   expect_true(dbExistsTable(conn, tname))
   dbSendQuery(conn, "INSERT INTO monetdbtest VALUES ('Роман Mühleisen')")
   expect_equal(
-    "Роман Mühleisen", DBI::dbGetQuery(conn, "SELECT a FROM monetdbtest")$a[[1]])
+    "Роман Mühleisen", DBI::dbGetQuery(conn, "SELECT a FROM monetdbtest")$a[[1]]
+  )
   dbSendQuery(conn, "DELETE FROM monetdbtest")
   MonetDB.R::dbSendUpdate(
-    conn, "INSERT INTO monetdbtest (a) VALUES (?)", "Роман Mühleisen")
+    conn, "INSERT INTO monetdbtest (a) VALUES (?)", "Роман Mühleisen"
+  )
   expect_equal(
-    "Роман Mühleisen", DBI::dbGetQuery(conn, "SELECT a FROM monetdbtest")$a[[1]])
+    "Роман Mühleisen", DBI::dbGetQuery(conn, "SELECT a FROM monetdbtest")$a[[1]]
+  )
   dbRemoveTable(conn, tname)
 })
 
