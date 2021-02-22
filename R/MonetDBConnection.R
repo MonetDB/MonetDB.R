@@ -261,12 +261,12 @@ setMethod("dbConnect", "MonetDBDriver", function(drv,
   conn <- new("MonetDBConnection", connenv = connenv)
 
   # Fill the MonetDB keywords
-  connenv$keywords <- list(unlist(
+  connenv$keywords <- array(c(unlist(
     DBI::dbGetQuery(
       conn,
       "SELECT DISTINCT * FROM sys.keywords ORDER BY keyword"
     )
-  ))
+  )))
 
   if (getOption("monetdb.sequential", F)) {
     message("MonetDB: Switching to single-threaded query execution.")
