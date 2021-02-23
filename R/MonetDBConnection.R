@@ -145,130 +145,123 @@ setMethod("dbDataType",
 #' }
 #' @export
 #' @rdname MonetDB.R
-setMethod("dbConnect", "MonetDBDriver", function(drv,
-                                                 dbname = "demo",
-                                                 user = "monetdb",
-                                                 password = "monetdb",
-                                                 host = "localhost",
-                                                 port = 50000L,
-                                                 timeout = 86400L,
-                                                 wait = FALSE,
-                                                 language = "sql",
-                                                 ...,
-                                                 url = "") {
-  if (substring(url, 1, 10) == "monetdb://") {
-    dbname <- url
-  }
-  timeout <- as.integer(timeout)
-
-  if (substring(dbname, 1, 10) == "monetdb://") {
-    rest <- substring(dbname, 11, nchar(dbname))
-    # split at /, so we get the dbname
-    slashsplit <- strsplit(rest, "/", fixed = TRUE)
-    hostport <- slashsplit[[1]][1]
-    dbname <- slashsplit[[1]][2]
-
-    # count the number of : in the string
-    ndc <- nchar(hostport) - nchar(gsub(":", "", hostport, fixed = T))
-    if (ndc == 0) {
-      host <- hostport
+setMethod("dbConnect", "MonetDBDriver",
+  function(drv, dbname = "demo", user = "monetdb", password = "monetdb",
+           host = "localhost", port = 50000L, timeout = 86400L, wait = FALSE,
+           language = "sql", ..., url = "") {
+    if (substring(url, 1, 10) == "monetdb://") {
+      dbname <- url
     }
-    if (ndc == 1) { # ipv4 case, any ipv6 address has more than one :
-      hostportsplit <- strsplit(hostport, ":", fixed = TRUE)
-      host <- hostportsplit[[1]][1]
-      port <- hostportsplit[[1]][2]
-    }
-    if (ndc > 1) { # ipv6 case, now we only need to check for ]:
-      # ipv6 with port number
-      if (length(grep("]:", hostport, fixed = TRUE)) == 1) {
-        hostportsplit <- strsplit(hostport, "]:", fixed = TRUE)
-        host <- substring(hostportsplit[[1]][1], 2)
-        port <- hostportsplit[[1]][2]
-      }
-      else {
+    timeout <- as.integer(timeout)
+
+    if (substring(dbname, 1, 10) == "monetdb://") {
+      rest <- substring(dbname, 11, nchar(dbname))
+      # split at /, so we get the dbname
+      slashsplit <- strsplit(rest, "/", fixed = TRUE)
+      hostport <- slashsplit[[1]][1]
+      dbname <- slashsplit[[1]][2]
+
+      # count the number of : in the string
+      ndc <- nchar(hostport) - nchar(gsub(":", "", hostport, fixed = T))
+      if (ndc == 0) {
         host <- hostport
       }
-    }
-  }
-  # this is important, otherwise we'll trip an assertion
-  port <- as.integer(port)
-  # validate port number
-  if (length(port) != 1 || port < 1 || port > 65535) {
-    stop("Illegal port number ", port)
-  }
-
-  if (getOption("monetdb.debug.mapi", F)) {
-    message(
-      "II: Connecting to MonetDB on host ", host, " at port ", port,
-      " to DB ", dbname, " with user ", user,
-      " and a non-printed password, timeout is ", timeout, " seconds."
-    )
-  }
-  socket <- FALSE
-  if (wait) {
-    repeat {
-      continue <- FALSE
-      tryCatch(
-        {
-          # open socket with a 5-sec timeout
-          # so we can check whether everything works
-          suppressWarnings(socket <<- .mapiConnect(host, port, 5))
-          # authenticate
-          .mapiAuthenticate(socket, dbname, user, password,
-            language = language
-          )
-          .mapiDisconnect(socket)
-          break
-        },
-        error = function(e) {
-          if ("connection" %in% class(socket)) {
-            tryCatch(close(socket), error = function(e) {})
-          }
-          message(
-            "Server not ready(", e$message,
-            "), retrying (ESC or CTRL+C to abort)"
-          )
-          Sys.sleep(1)
-          continue <<- TRUE
+      if (ndc == 1) { # ipv4 case, any ipv6 address has more than one :
+        hostportsplit <- strsplit(hostport, ":", fixed = TRUE)
+        host <- hostportsplit[[1]][1]
+        port <- hostportsplit[[1]][2]
+      }
+      if (ndc > 1) { # ipv6 case, now we only need to check for ]:
+        # ipv6 with port number
+        if (length(grep("]:", hostport, fixed = TRUE)) == 1) {
+          hostportsplit <- strsplit(hostport, "]:", fixed = TRUE)
+          host <- substring(hostportsplit[[1]][1], 2)
+          port <- hostportsplit[[1]][2]
         }
+        else {
+          host <- hostport
+        }
+      }
+    }
+    # this is important, otherwise we'll trip an assertion
+    port <- as.integer(port)
+    # validate port number
+    if (length(port) != 1 || port < 1 || port > 65535) {
+      stop("Illegal port number ", port)
+    }
+
+    if (getOption("monetdb.debug.mapi", F)) {
+      message(
+        "II: Connecting to MonetDB on host ", host, " at port ", port,
+        " to DB ", dbname, " with user ", user,
+        " and a non-printed password, timeout is ", timeout, " seconds."
       )
     }
-  }
+    socket <- FALSE
+    if (wait) {
+      repeat {
+        continue <- FALSE
+        tryCatch(
+          {
+            # open socket with a 5-sec timeout
+            # so we can check whether everything works
+            suppressWarnings(socket <<- .mapiConnect(host, port, 5))
+            # authenticate
+            .mapiAuthenticate(socket, dbname, user, password,
+              language = language
+            )
+            .mapiDisconnect(socket)
+            break
+          },
+          error = function(e) {
+            if ("connection" %in% class(socket)) {
+              tryCatch(close(socket), error = function(e) {})
+            }
+            message(
+              "Server not ready(", e$message,
+              "), retrying (ESC or CTRL+C to abort)"
+            )
+            Sys.sleep(1)
+            continue <<- TRUE
+          }
+        )
+      }
+    }
 
-  # make new socket with user-specified timeout
+    # make new socket with user-specified timeout
 
-  connenv <- new.env(parent = emptyenv())
-  connenv$lock <- 0
-  connenv$deferred <- list()
-  connenv$exception <- list()
-  connenv$params <- list(
-    drv = drv, host = host, port = port, timeout = timeout,
-    dbname = dbname, user = user, password = password,
-    language = language
-  )
-  connenv$socket <- .mapiConnect(host, port, timeout)
-  .mapiAuthenticate(connenv$socket, dbname, user, password,
-    language = language
-  )
-
-  conn <- new("MonetDBConnection", connenv = connenv)
-
-  # Fill the MonetDB keywords
-  connenv$keywords <- array(c(unlist(
-    DBI::dbGetQuery(
-      conn,
-      "SELECT DISTINCT * FROM sys.keywords ORDER BY keyword"
+    connenv <- new.env(parent = emptyenv())
+    connenv$lock <- 0
+    connenv$deferred <- list()
+    connenv$exception <- list()
+    connenv$params <- list(
+      drv = drv, host = host, port = port, timeout = timeout,
+      dbname = dbname, user = user, password = password,
+      language = language
     )
-  )))
+    connenv$socket <- .mapiConnect(host, port, timeout)
+    .mapiAuthenticate(connenv$socket, dbname, user, password,
+      language = language
+    )
 
-  if (getOption("monetdb.sequential", F)) {
-    message("MonetDB: Switching to single-threaded query execution.")
-    dbSendQuery(conn, "set optimizer='sequential_pipe'")
-  }
-  attr(conn, "dbPreExists") <- TRUE
-  conn
-},
-valueClass = "MonetDBConnection"
+    conn <- new("MonetDBConnection", connenv = connenv)
+
+    # Fill the MonetDB keywords
+    connenv$keywords <- array(c(unlist(
+      DBI::dbGetQuery(
+        conn,
+        "SELECT DISTINCT * FROM sys.keywords ORDER BY keyword"
+      )
+    )))
+
+    if (getOption("monetdb.sequential", F)) {
+      message("MonetDB: Switching to single-threaded query execution.")
+      dbSendQuery(conn, "set optimizer='sequential_pipe'")
+    }
+    attr(conn, "dbPreExists") <- TRUE
+    conn
+  },
+  valueClass = "MonetDBConnection"
 )
 
 # dbDisconnect()
@@ -530,7 +523,8 @@ setMethod(
 #'   dbWriteTable(conn, "mtcars", mtcars[5:10, ], overwrite = TRUE)
 #'   dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = TRUE)
 #'   dbWriteTable(conn, "mtcars", mtcars[11:15, ],
-#'      append = TRUE, csvdump = TRUE)
+#'     append = TRUE, csvdump = TRUE
+#'   )
 #'   dbWriteTable(conn, "iris", iris, append = TRUE, temporary = TRUE)
 #'   dbDisconnect(conn)
 #' }
