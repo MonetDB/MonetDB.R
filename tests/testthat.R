@@ -1,10 +1,13 @@
 library(testthat)
 library(MonetDB.R)
 
-not_on_cran <- function() {
-  return(invisible(identical(Sys.getenv("NOT_CRAN"), "true")))
+run <- function() {
+  return(invisible(
+    identical(Sys.getenv("NOT_CRAN"), "true") &&
+      foundDefaultMonetDBdatabase()
+  ))
 }
 
-if (not_on_cran()) {
+if (run()) {
   test_check("MonetDB.R")
 }
