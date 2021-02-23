@@ -17,11 +17,6 @@ ignored).}
 \item{list}{A list of extra parameters. Default: \code{NULL}.}
 
 \item{async}{Execute the query in Async mode? Default: \code{FALSE}.}
-
-\item{params}{A list of query parameters to be substituted into
-a parameterised query. Query parameters are sent as strings, and the
-correct type is imputed by PostgreSQL. If this fails, you can manually
-cast the parameter with e.g. \code{"$1::bigint"}.}
 }
 \description{
 FIXME: update this documentation!

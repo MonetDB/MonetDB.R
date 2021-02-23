@@ -300,10 +300,6 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 #'
 #' @param conn A [MonetDBConnection-class] created by [dbConnect()].
 #' @param statement An SQL string to execute
-#' @param params A list of query parameters to be substituted into
-#'   a parameterised query. Query parameters are sent as strings, and the
-#'   correct type is imputed by PostgreSQL. If this fails, you can manually
-#'   cast the parameter with e.g. `"$1::bigint"`.
 #' @param ... Another arguments needed for compatibility with generic (currently
 #'   ignored).
 #' @param list A list of extra parameters. Default: `NULL`.
