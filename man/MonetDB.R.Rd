@@ -67,7 +67,6 @@ using the \pkg{MonetDB.R} package.
 }
 \examples{
 library(DBI)
-# Only run the examples on systems with the default MonetDB connection:
 if (foundDefaultMonetDBdatabase()) {
   # Pass more arguments as necessary to dbConnect()
   conn <- dbConnect(MonetDB.R::MonetDB())

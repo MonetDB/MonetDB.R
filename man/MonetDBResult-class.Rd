@@ -38,3 +38,4 @@ MonetDBResult and methods.
 \item{\code{env}}{list of connection environment variables and their values.}
 }}
 
+\keyword{internal}

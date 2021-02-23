@@ -1,9 +1,8 @@
-#' @include MonetDBConnection.R
-NULL
-
 #' MonetDBResult and methods.
 #'
 #' @slot env list of connection environment variables and their values.
+#' @keywords internal
+#' @include MonetDBConnection.R
 #' @export
 setClass("MonetDBResult",
   contains = "DBIResult",
