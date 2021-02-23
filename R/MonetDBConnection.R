@@ -9,7 +9,6 @@ NULL
 setClass("MonetDBConnection",
   contains = "DBIConnection",
   slots = c(
-    # FIXME: this seems to be unused. Maybe it's a placeholder?
     connenv = "environment"
   )
 )
