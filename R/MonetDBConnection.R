@@ -717,14 +717,6 @@ setMethod("dbIsValid", "MonetDBConnection", function(dbObj, ...) {
 })
 
 ### dbSendUpdate() and friends ###
-if (is.null(getGeneric("dbSendUpdate"))) {
-  setGeneric(
-    "dbSendUpdate",
-    function(conn, statement, ..., async = FALSE) {
-      standardGeneric("dbSendUpdate")
-    }
-  )
-}
 #' @title Send a data-altering SQL statement to the database.
 #' @description
 #' The function `dbSendUpdate()` is used to send a data-altering statement
@@ -737,7 +729,8 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #' The `dbSendUpdateAsync()` function works in a similar way as
 #' `dbSendUpdate()``, except that the former should be used
 #' when the database update is called from finalisers, to avoid very esoteric
-#' concurrency problems. Here, the update is not guaranteed
+#' concurrency problems. The `dbSendUpdateAsync()` function can be used in
+#' finalisers to not mess up the socket. Here, the update is not guaranteed.
 #' @param conn
 #'        A MonetDB.R database connection, created using [DBI::dbConnect()] with
 #'        the [MonetDB.R()] database driver.
@@ -773,6 +766,15 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #' }
 #' @export
 #' @rdname dbSendUpdate
+setGeneric(
+  "dbSendUpdate",
+  function(conn, statement, ..., async = FALSE) {
+    standardGeneric("dbSendUpdate")
+  }
+)
+
+#' @export
+#' @rdname dbSendUpdate
 setMethod(
   "dbSendUpdate",
   signature(conn = "MonetDBConnection", statement = "character"),
@@ -793,13 +795,13 @@ setMethod(
   }
 )
 
-# this can be used in finalisers to not mess up the socket
-if (is.null(getGeneric("dbSendUpdateAsync"))) {
-  setGeneric(
-    "dbSendUpdateAsync",
-    function(conn, statement, ...) standardGeneric("dbSendUpdateAsync")
-  )
-}
+#' @export
+#' @rdname dbSendUpdate
+setGeneric(
+  "dbSendUpdateAsync",
+  function(conn, statement, ...) standardGeneric("dbSendUpdateAsync")
+)
+
 #' @export
 #' @rdname dbSendUpdate
 setMethod(

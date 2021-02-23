@@ -52,12 +52,6 @@ setMethod("dbRollback", "MonetDBConnection", function(conn, ...) {
 })
 
 # dbTransaction() #DEPRECATED
-if (is.null(getGeneric("dbTransaction"))) {
-  setGeneric(
-    "dbTransaction",
-    function(conn, ...) standardGeneric("dbTransaction")
-  )
-}
 #' @title Run a multi-statements transaction
 #' @description
 #' This method is DEPRECATED. Please use [transactions] functions
@@ -90,6 +84,13 @@ if (is.null(getGeneric("dbTransaction"))) {
 #'   dbSendUpdate(conn, "DROP TABLE foo")
 #'   dbDisconnect(conn)
 #' }
+#' @export
+#' @rdname dbTransaction
+setGeneric(
+  "dbTransaction",
+  function(conn, ...) standardGeneric("dbTransaction")
+)
+
 #' @export
 #' @rdname dbTransaction
 setMethod("dbTransaction", signature(conn = "MonetDBConnection"),
