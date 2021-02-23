@@ -35,7 +35,6 @@ setClass("MonetDBDriver", contains = "DBIDriver")
 #' @export
 #' @rdname MonetDBDriver-class
 setMethod("dbUnloadDriver", "MonetDBDriver", function(drv, ...) {
-  # FIXME: or should we put "NULL" here?
   invisible(TRUE)
 })
 
