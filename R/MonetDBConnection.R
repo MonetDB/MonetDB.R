@@ -113,7 +113,6 @@ setMethod("dbDataType",
 )
 
 # DBIdriver > dbConnect()
-#' @name dbConnect
 #' @title dbConnect
 #' @description
 #' FIXME: the documentation here needs to be updated to MonetDB
@@ -149,6 +148,7 @@ setMethod("dbDataType",
 #' con <- dbConnect(MonetDB.R::MonetDB())
 #' dbDisconnect(con)
 #' @export
+#' @rdname MonetDB.R
 setMethod("dbConnect", "MonetDBDriver", function(drv,
                                                  dbname = "demo",
                                                  user = "monetdb",
@@ -277,7 +277,7 @@ valueClass = "MonetDBConnection"
 
 # dbDisconnect()
 #' @export
-#' @rdname dbConnect
+#' @rdname MonetDB.R
 setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
   .mapiDisconnect(conn@connenv$socket)
   invisible(TRUE)
