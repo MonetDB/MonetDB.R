@@ -22,9 +22,13 @@ returns a connection on success and throws a testthat skip condition on
 failure, making it suitable for use in tests.
 }
 \examples{
+library(DBI)
 if (foundDefaultMonetDBdatabase()) {
-  db <- monetdbDefault()
-  dbListTables(db)
-  dbDisconnect(db)
+  conn <- monetdbDefault()
+  dbWriteTable(conn, 'mtcars', mtcars)
+  dbReadTable(conn, 'mtcars')
+  dbRemoveTable(conn, 'mtcars')
+  dbListTables(conn)
+  dbDisconnect(conn)
 }
 }

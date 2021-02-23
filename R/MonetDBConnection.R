@@ -139,8 +139,20 @@ setMethod("dbDataType",
 #' @examples
 #' library(DBI)
 #' if (foundDefaultMonetDBdatabase()) {
-#'   # Pass more arguments as necessary to dbConnect()
+#'   # Connect to the default database
 #'   conn <- dbConnect(MonetDB.R::MonetDB())
+#'   DBI::dbGetQuery(conn, 'select 42')
+#'   dbDisconnect(conn)
+#'
+#'   # Connect to a database with customised parameter values
+#'   conn <- dbConnect(MonetDB.R::MonetDB(), dbname = "demo", user = "monetdb",
+#'     password = "monetdb", host = "localhost", port = 50000L)
+#'   DBI::dbGetQuery(conn, 'select 43')
+#'   dbDisconnect(conn)
+#'
+#'   # Connect to a database using a URL string
+#'   conn <- dbConnect(MonetDB.R::MonetDB(), "monetdb://localhost:50000/demo")
+#'   DBI::dbGetQuery(conn, 'select 44')
 #'   dbDisconnect(conn)
 #' }
 #' @export
@@ -296,13 +308,12 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 #'
 #' @examples
 #' library(DBI)
-#' # Only run the examples on systems with the default MonetDB connection:
 #' if (foundDefaultMonetDBdatabase()) {
 #'   conn <- dbConnect(MonetDB.R())
 #'   dbWriteTable(conn, "usarrests", datasets::USArrests, temporary = TRUE)
 #'
 #'   # Run query to get results as dataframe
-#'   dbGetQuery(conn, "SELECT * FROM usarrests LIMIT 3")
+#'   DBI::dbGetQuery(conn, "SELECT * FROM usarrests LIMIT 3")
 #'
 #'   # Send query to pull requests in batches
 #'   res <- dbSendQuery(conn, "SELECT * FROM usarrests")
@@ -427,256 +438,7 @@ setMethod("dbGetException", "MonetDBConnection", function(conn, ...) {
 
 # dbListResults()
 
-# dbListFields()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbListFields",
-  signature(conn = "MonetDBConnection", name = "character"),
-  function(conn, name, ...) {
-    if (!dbExistsTable(conn, name)) {
-      stop(paste0("Unknown table: ", name))
-    }
-    df <- DBI::dbGetQuery(conn, paste0(
-      "SELECT columns.name AS name FROM sys.columns JOIN sys.tables ON ",
-      "columns.table_id = tables.id WHERE tables.name = '", name, "';"
-    ))
-    df$name
-  }
-)
-
-# dbListTables()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbListTables", "MonetDBConnection",
-  function(conn, ..., sys_tables = F, schema_names = F) {
-    q <- paste(
-      "SELECT schemas.name AS sn, tables.name AS tn",
-      "FROM sys.tables JOIN sys.schemas",
-      "ON tables.schema_id = schemas.id"
-    )
-    if (!sys_tables) {
-      q <- paste0(q, " WHERE tables.system = FALSE ORDER BY sn, tn")
-    }
-    df <- DBI::dbGetQuery(conn, q)
-    df$tn <- quoteIfNeeded(conn, df$tn)
-    res <- df$tn
-    if (schema_names) {
-      df$sn <- quoteIfNeeded(conn, df$sn)
-      res <- paste0(df$sn, ".", df$tn)
-    }
-    as.character(res)
-  }
-)
-
 # dbListObjects()
-
-# dbReadTable()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbReadTable",
-  signature(conn = "MonetDBConnection", name = "character"),
-  function(conn, name, ...) {
-    name <- quoteIfNeeded(conn, name)
-    if (!dbExistsTable(conn, name)) {
-      stop(paste0("Unknown table: ", name))
-    }
-    DBI::dbGetQuery(conn, paste0("SELECT * FROM ", name), ...)
-  }
-)
-
-# dbWriteTable()
-#' @title dbWriteTable
-#' @description
-#' Write, append or overwrite a data frame to a database table
-#'
-#' @param conn
-#'        A MonetDB.R database connection, created using [DBI::dbConnect] with
-#'        the [MonetDB.R] database driver.
-#' @param name
-#'        The name of the database table.
-#' @param value
-#'        The dataframe that needs to be stored in the table
-#' @param overwrite
-#'        Overwrite the whole table with dataframe. Default `FALSE`.
-#' @param append
-#'        Append dataframe to table
-#' @param csvdump
-#'        Dump dataframe to a temporary CSV file, and then import that CSV file.
-#'        Can be used for performance reasons. Default `FALSE`.
-#' @param transaction
-#'        Wrap operation in transaction. Default: `TRUE`.
-#' @param temporary
-#'        Create a temporary table instead of a normal SQL table (i.e.
-#'        persistent). Default: `FALSE`.
-#' @param ... Any other parameters. Passed to [monetdb.read.csv()]
-#' @return TRUE if the writetable command was successful
-#'
-#' @examples
-#' library(DBI)
-#' # Only run the examples on systems with the default MonetDB connection:
-#' if (foundDefaultMonetDBdatabase()) {
-#'   conn <- dbConnect(MonetDB.R())
-#'   dbWriteTable(conn, "mtcars", mtcars[1:5, ])
-#'   dbWriteTable(conn, "mtcars", mtcars[5:10, ], overwrite = TRUE)
-#'   dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = TRUE)
-#'   dbWriteTable(conn, "mtcars", mtcars[11:15, ],
-#'     append = TRUE, csvdump = TRUE
-#'   )
-#'   dbWriteTable(conn, "iris", iris, append = TRUE, temporary = TRUE)
-#'   dbDisconnect(conn)
-#' }
-#' @export
-#' @rdname dbWriteTable
-setMethod(
-  "dbWriteTable",
-  signature(conn = "MonetDBConnection", name = "character", value = "ANY"),
-  function(conn, name, value, overwrite = FALSE, append = FALSE,
-           csvdump = FALSE, transaction = TRUE, temporary = FALSE, ...) {
-    if (is.character(value)) {
-      message(paste(
-        "Treating character vector parameter as file name(s)",
-        "for monetdb.read.csv()"
-      ))
-      monetdb.read.csv(
-        conn = conn, files = value, tablename = name,
-        create = !append, ...
-      )
-      return(invisible(TRUE))
-    }
-    if (is.vector(value) && !is.list(value)) {
-      value <- data.frame(x = value, stringsAsFactors = F)
-    }
-    if (length(value) < 1) stop("value must have at least one column")
-    if (is.null(names(value))) {
-      names(value) <- paste("V", 1:length(value), sep = "")
-    }
-    if (length(value[[1]]) > 0) {
-      if (!is.data.frame(value)) {
-        value <- as.data.frame(value,
-          row.names = 1:length(value[[1]]),
-          stringsAsFactors = F
-        )
-      }
-    } else {
-      if (!is.data.frame(value)) {
-        value <- as.data.frame(value, stringsAsFactors = F)
-      }
-    }
-    if (overwrite && append) {
-      stop("Setting both overwrite and append to TRUE makes no sense.")
-    }
-    if (transaction) {
-      dbBegin(conn)
-      on.exit(tryCatch(dbRollback(conn), error = function(e) {}))
-    }
-    qname <- quoteIfNeeded(conn, name)
-    if (dbExistsTable(conn, qname)) {
-      if (overwrite) dbRemoveTable(conn, qname)
-      if (!overwrite && !append) {
-        stop(paste(
-          "Table", qname, "already exists.",
-          "Set overwrite = TRUE if you want to remove the existing table.",
-          "Set append = TRUE if you would like to add the new data ",
-          "to the existing table."
-        ))
-      }
-    }
-
-    if (!dbExistsTable(conn, qname)) {
-      fts <- sapply(value, dbDataType, dbObj = conn)
-      fdef <- paste(quoteIfNeeded(conn, names(value)), fts, collapse = ", ")
-      if (temporary) {
-        ct <- paste0(
-          "CREATE TEMPORARY TABLE ", qname, " (", fdef,
-          ") ON COMMIT PRESERVE ROWS"
-        )
-      } else {
-        ct <- paste0("CREATE TABLE ", qname, " (", fdef, ")")
-      }
-      dbSendUpdate(conn, ct)
-    }
-    if (length(value[[1]])) {
-      classes <- unlist(lapply(value, class))
-      for (c in names(classes[classes == "character"])) {
-        value[[c]] <- enc2utf8(value[[c]])
-      }
-      for (c in names(classes[classes == "factor"])) {
-        levels(value[[c]]) <- enc2utf8(levels(value[[c]]))
-      }
-    }
-    if (csvdump) {
-      tmp <- tempfile(fileext = ".csv")
-      write.table(value, tmp,
-        sep = ",", quote = TRUE, row.names = FALSE,
-        col.names = FALSE, na = "", fileEncoding = "UTF-8"
-      )
-      dbSendQuery(conn, paste0(
-        "COPY INTO ", qname, " FROM '", tmp,
-        "' USING DELIMITERS ',','\\n','\"' NULL AS ''"
-      ))
-      file.remove(tmp)
-    }
-    else {
-      vins <- paste("(", paste(rep("?", length(value)), collapse = ", "), ")",
-        sep = ""
-      )
-      # chunk some inserts together so we do not need to do a round trip for
-      # every one
-      splitlen <- 0:(nrow(value) - 1) %/%
-        getOption("monetdb.insert.splitsize", 1000)
-      lapply(
-        split(value, splitlen),
-        function(valueck) {
-          bvins <- c()
-          for (j in 1:length(valueck[[1]])) {
-            bvins <- c(bvins, .bindParameters(vins, as.list(valueck[j, ])))
-          }
-          dbSendUpdate(conn, paste0(
-            "INSERT INTO ", qname, " VALUES ",
-            paste0(bvins, collapse = ", ")
-          ))
-        }
-      )
-    }
-    if (transaction) {
-      dbCommit(conn)
-      on.exit(NULL)
-    }
-    return(invisible(TRUE))
-  }
-)
-
-# dbExistsTable()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbExistsTable",
-  signature(conn = "MonetDBConnection", name = "character"),
-  function(conn, name, ...) {
-    name <- quoteIfNeeded(conn, name)
-    return(as.character(name) %in%
-      dbListTables(conn, sys_tables = T))
-  }
-)
-
-# dbRemoveTable()
-#' @export
-#' @rdname MonetDBConnection-class
-setMethod(
-  "dbRemoveTable",
-  signature(conn = "MonetDBConnection", name = "character"),
-  function(conn, name, ...) {
-    name <- quoteIfNeeded(conn, name)
-    if (dbExistsTable(conn, name)) {
-      dbSendUpdate(conn, paste("DROP TABLE", name))
-      return(invisible(TRUE))
-    }
-    return(invisible(FALSE))
-  }
-)
 
 ### methods from DBIObjeect ###
 # DBIObject > dbGetInfo()
@@ -745,17 +507,13 @@ setMethod("dbIsValid", "MonetDBConnection", function(dbObj, ...) {
 #' # Only run the examples on systems with the default MonetDB connection:
 #' if (foundDefaultMonetDBdatabase()) {
 #'   conn <- dbConnect(MonetDB.R())
+#'
 #'   dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
 #'   dbSendUpdate(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
-#'   dbSendUpdate(conn, "DROP TABLE foo")
-#'   dbDisconnect(conn)
-#' }
 #'
-#' if (foundDefaultMonetDBdatabase()) {
-#'   conn <- dbConnect(MonetDB.R())
-#'   dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-#'   dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
+#'   dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 24, "bar")
 #'   dbSendUpdateAsync(conn, "DROP TABLE foo")
+#'
 #'   dbDisconnect(conn)
 #' }
 #' @export

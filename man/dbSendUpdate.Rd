@@ -49,17 +49,13 @@ library(DBI)
 # Only run the examples on systems with the default MonetDB connection:
 if (foundDefaultMonetDBdatabase()) {
   conn <- dbConnect(MonetDB.R())
+
   dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
   dbSendUpdate(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
-  dbSendUpdate(conn, "DROP TABLE foo")
-  dbDisconnect(conn)
-}
 
-if (foundDefaultMonetDBdatabase()) {
-  conn <- dbConnect(MonetDB.R())
-  dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-  dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
+  dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 24, "bar")
   dbSendUpdateAsync(conn, "DROP TABLE foo")
+
   dbDisconnect(conn)
 }
 }

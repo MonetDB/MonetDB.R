@@ -29,19 +29,22 @@ end the transaction by either committing or rolling back the changes.
 }
 \examples{
 library(DBI)
-# Only run the examples on systems with the default MonetDB connection:
 if (foundDefaultMonetDBdatabase()) {
   conn <- dbConnect(MonetDB.R())
-  dbWriteTable(conn, "USarrests", datasets::USArrests, temporary = TRUE)
-  dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
+
+  dbBegin(conn)
+  dbWriteTable(conn, "USarrests", datasets::USArrests, temporary = TRUE,
+    transaction = FALSE)
+  DBI::dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
+  dbCommit(conn)
 
   dbBegin(conn)
   dbExecute(conn, 'DELETE from "USarrests" WHERE "Murder" > 1')
-  dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
+  DBI::dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
   dbRollback(conn)
 
   # Rolling back changes leads to original count
-  dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
+  DBI::dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
 
   dbRemoveTable(conn, "USarrests")
   dbDisconnect(conn)

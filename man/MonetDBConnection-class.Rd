@@ -4,26 +4,11 @@
 \name{MonetDBConnection-class}
 \alias{MonetDBConnection-class}
 \alias{dbGetException,MonetDBConnection-method}
-\alias{dbListFields,MonetDBConnection,character-method}
-\alias{dbListTables,MonetDBConnection-method}
-\alias{dbReadTable,MonetDBConnection,character-method}
-\alias{dbExistsTable,MonetDBConnection,character-method}
-\alias{dbRemoveTable,MonetDBConnection,character-method}
 \alias{dbGetInfo,MonetDBConnection-method}
 \alias{dbIsValid,MonetDBConnection-method}
 \title{MonetDBConnection and methods.}
 \usage{
 \S4method{dbGetException}{MonetDBConnection}(conn, ...)
-
-\S4method{dbListFields}{MonetDBConnection,character}(conn, name, ...)
-
-\S4method{dbListTables}{MonetDBConnection}(conn, ..., sys_tables = F, schema_names = F)
-
-\S4method{dbReadTable}{MonetDBConnection,character}(conn, name, ...)
-
-\S4method{dbExistsTable}{MonetDBConnection,character}(conn, name, ...)
-
-\S4method{dbRemoveTable}{MonetDBConnection,character}(conn, name, ...)
 
 \S4method{dbGetInfo}{MonetDBConnection}(dbObj, ...)
 

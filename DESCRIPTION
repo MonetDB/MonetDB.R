@@ -51,4 +51,5 @@ Collate:
     'mapi.R'
     'monetdb_read_csv.R'
     'rsqlite_compatibility.R'
+    'tables.R'
     'transactions.R'

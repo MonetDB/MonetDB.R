@@ -30,13 +30,12 @@ fetches and clears for you.
 }
 \examples{
 library(DBI)
-# Only run the examples on systems with the default MonetDB connection:
 if (foundDefaultMonetDBdatabase()) {
   conn <- dbConnect(MonetDB.R())
   dbWriteTable(conn, "usarrests", datasets::USArrests, temporary = TRUE)
 
   # Run query to get results as dataframe
-  dbGetQuery(conn, "SELECT * FROM usarrests LIMIT 3")
+  DBI::dbGetQuery(conn, "SELECT * FROM usarrests LIMIT 3")
 
   # Send query to pull requests in batches
   res <- dbSendQuery(conn, "SELECT * FROM usarrests")
