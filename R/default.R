@@ -12,7 +12,7 @@
 #'   dbListTables(db)
 #'   dbDisconnect(db)
 #' }
-#' @name MonetDB-Default
+#' @name default
 foundDefaultMonetDBdatabase <- function(...) {
   tryCatch({
     con <- connect_default(...)
@@ -33,7 +33,7 @@ foundDefaultMonetDBdatabase <- function(...) {
 #' returns a connection on success and throws a testthat skip condition on
 #' failure, making it suitable for use in tests.
 #' @export
-#' @rdname MonetDB-Default
+#' @rdname default
 monetdbDefault <- function(...) {
   tryCatch({
     connect_default(...)
