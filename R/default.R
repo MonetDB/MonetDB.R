@@ -7,10 +7,14 @@
 #' @param ... Additional arguments passed on to [dbConnect()]
 #' @export
 #' @examples
+#' library(DBI)
 #' if (foundDefaultMonetDBdatabase()) {
-#'   db <- monetdbDefault()
-#'   dbListTables(db)
-#'   dbDisconnect(db)
+#'   conn <- monetdbDefault()
+#'   dbWriteTable(conn, 'mtcars', mtcars)
+#'   dbReadTable(conn, 'mtcars')
+#'   dbRemoveTable(conn, 'mtcars')
+#'   dbListTables(conn)
+#'   dbDisconnect(conn)
 #' }
 #' @rdname default
 foundDefaultMonetDBdatabase <- function(...) {
