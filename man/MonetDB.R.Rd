@@ -53,20 +53,17 @@ Default: \code{50000}.}
 options.}
 
 \item{url}{\code{dbname} as a url string. Default: \code{""}.}
+
+\item{conn}{a connection to a MonetDB server established earlier with
+\code{MonetDB.R::dbConnect()}}
 }
 \value{
 conn Connection established to the given MonetDB server.
 }
 \description{
-FIXME: the documentation here needs to be updated to MonetDB
 \code{DBI::dbConnect()} establishes a connection to a database.
 Set \code{drv = MonetDB.R::MonetDB()} to connect to a MonetDB database
 using the \pkg{MonetDB.R} package.
-
-Manually disconnecting a connection is not necessary with \pkg{MonetDB.R},
-but still recommended;
-if you delete the object containing the connection, it will be automatically
-disconnected during the next GC with a warning.
 }
 \examples{
 library(DBI)

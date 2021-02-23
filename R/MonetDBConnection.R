@@ -115,15 +115,9 @@ setMethod("dbDataType",
 # DBIdriver > dbConnect()
 #' @title dbConnect
 #' @description
-#' FIXME: the documentation here needs to be updated to MonetDB
 #' `DBI::dbConnect()` establishes a connection to a database.
 #' Set `drv = MonetDB.R::MonetDB()` to connect to a MonetDB database
 #' using the \pkg{MonetDB.R} package.
-#'
-#' Manually disconnecting a connection is not necessary with \pkg{MonetDB.R},
-#' but still recommended;
-#' if you delete the object containing the connection, it will be automatically
-#' disconnected during the next GC with a warning.
 #'
 #' @param drv Should be set to [MonetDB.R::MonetDB()]
 #'   to use the \pkg{MonetDB.R} package.
@@ -144,7 +138,6 @@ setMethod("dbDataType",
 #'
 #' @examples
 #' library(DBI)
-#' # Only run the examples on systems with the default MonetDB connection:
 #' if (foundDefaultMonetDBdatabase()) {
 #'   # Pass more arguments as necessary to dbConnect()
 #'   conn <- dbConnect(MonetDB.R::MonetDB())
@@ -279,6 +272,9 @@ valueClass = "MonetDBConnection"
 )
 
 # dbDisconnect()
+#' @param conn
+#'   a connection to a MonetDB server established earlier with
+#'   `MonetDB.R::dbConnect()`
 #' @export
 #' @rdname MonetDB.R
 setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
