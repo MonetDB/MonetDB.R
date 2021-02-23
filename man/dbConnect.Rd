@@ -2,6 +2,7 @@
 % Please edit documentation in R/MonetDBConnection.R
 \name{dbConnect}
 \alias{dbConnect}
+\alias{dbDisconnect,MonetDBConnection-method}
 \title{dbConnect}
 \usage{
 \S4method{dbConnect}{MonetDBDriver}(
@@ -17,6 +18,8 @@
   ...,
   url = ""
 )
+
+\S4method{dbDisconnect}{MonetDBConnection}(conn, ...)
 }
 \arguments{
 \item{drv}{Should be set to \code{\link[=MonetDB]{MonetDB()}}

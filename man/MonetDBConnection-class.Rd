@@ -3,7 +3,6 @@
 \docType{class}
 \name{MonetDBConnection-class}
 \alias{MonetDBConnection-class}
-\alias{dbDisconnect,MonetDBConnection-method}
 \alias{dbGetException,MonetDBConnection-method}
 \alias{dbListFields,MonetDBConnection,character-method}
 \alias{dbListTables,MonetDBConnection-method}
@@ -14,8 +13,6 @@
 \alias{dbIsValid,MonetDBConnection-method}
 \title{MonetDBConnection and methods.}
 \usage{
-\S4method{dbDisconnect}{MonetDBConnection}(conn, ...)
-
 \S4method{dbGetException}{MonetDBConnection}(conn, ...)
 
 \S4method{dbListFields}{MonetDBConnection,character}(conn, name, ...)

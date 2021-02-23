@@ -29,25 +29,25 @@
 #'   dbDisconnect(con)
 #' }
 #' @include MonetDBConnection.R
-#' @name monetdb-transactions
+#' @name transactions
 NULL
 
 #' @export
-#' @rdname monetdb-transactions
+#' @rdname transactions
 setMethod("dbBegin", "MonetDBConnection", function(conn, ...) {
   dbSendQuery(conn, "START TRANSACTION")
   invisible(TRUE)
 })
 
 #' @export
-#' @rdname monetdb-transactions
+#' @rdname transactions
 setMethod("dbCommit", "MonetDBConnection", function(conn, ...) {
   dbSendQuery(conn, "COMMIT")
   invisible(TRUE)
 })
 
 #' @export
-#' @rdname monetdb-transactions
+#' @rdname transactions
 setMethod("dbRollback", "MonetDBConnection", function(conn, ...) {
   dbSendQuery(conn, "ROLLBACK")
   invisible(TRUE)
