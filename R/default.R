@@ -4,7 +4,6 @@
 #' `dbConnect(`[MonetDB.R::MonetDB()]`)`. This function checks if that
 #' database is available, and if not, displays an informative message.
 #'
-#' @param ... Additional arguments passed on to [dbConnect()]
 #' @export
 #' @examples
 #' library(DBI)
@@ -17,9 +16,9 @@
 #'   dbDisconnect(conn)
 #' }
 #' @rdname default
-foundDefaultMonetDBdatabase <- function(...) {
+foundDefaultMonetDBdatabase <- function() {
   tryCatch({
-    conn <- connect_default(...)
+    conn <- dbConnect(MonetDB.R())
     dbDisconnect(conn)
     TRUE
   }, error = function(...) {
@@ -38,14 +37,10 @@ foundDefaultMonetDBdatabase <- function(...) {
 #' failure, making it suitable for use in tests.
 #' @export
 #' @rdname default
-monetdbDefault <- function(...) {
+monetdbDefault <- function() {
   tryCatch({
-    connect_default(...)
+    dbConnect(MonetDB.R())
   }, error = function(...) {
     testthat::skip("Default database not available")
   })
-}
-
-connect_default <- function(...) {
-  dbConnect(MonetDB(), ...)
 }

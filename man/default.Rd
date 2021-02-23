@@ -5,12 +5,9 @@
 \alias{monetdbDefault}
 \title{Check if the default MonetDB database is available.}
 \usage{
-foundDefaultMonetDBdatabase(...)
+foundDefaultMonetDBdatabase()
 
-monetdbDefault(...)
-}
-\arguments{
-\item{...}{Additional arguments passed on to \code{\link[=dbConnect]{dbConnect()}}}
+monetdbDefault()
 }
 \description{
 MonetDB examples and tests connect to a default database via
