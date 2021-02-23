@@ -16,7 +16,7 @@ the \link{MonetDB.R} database driver.}
 TRUE if the transaction was successful
 }
 \description{
-This method is DEPRECATED. Please use \link{monetdb-transactions} functions
+This method is DEPRECATED. Please use \link{transactions} functions
 instead.
 
 \code{dbTransaction()} is used to switch the query processing from the normal

@@ -46,7 +46,11 @@
 #'   file <- tempfile()
 #'   write.table(iris, file, sep = ",", row.names = FALSE)
 #'   MonetDB.R::monetdb.read.csv(conn, file, "iris")
-#'   DBI::dbGetQuery(conn, 'SELECT "Species", avg("Sepal.Length"), avg("Sepal.Width"), avg("Petal.Length"), avg("Petal.Width") FROM iris GROUP BY "Species"')
+#'   DBI::dbGetQuery(conn, paste(
+#'     'SELECT "Species", avg("Sepal.Length"), ',
+#'     '       avg("Sepal.Width"), avg("Petal.Length"), avg("Petal.Width") ',
+#'     'FROM iris GROUP BY "Species"')
+#'   )
 #'   dbRemoveTable(conn, "iris")
 #' }
 #' @name monetdb.read.csv

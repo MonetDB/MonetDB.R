@@ -63,7 +63,7 @@ if (is.null(getGeneric("dbTransaction"))) {
 #' @name dbTransaction
 #' @title Run a multi-statements transaction
 #' @description
-#' This method is DEPRECATED. Please use [monetdb-transactions] functions
+#' This method is DEPRECATED. Please use [transactions] functions
 #' instead.
 #'
 #' `dbTransaction()` is used to switch the query processing from the normal
