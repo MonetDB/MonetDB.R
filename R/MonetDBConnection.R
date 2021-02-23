@@ -95,7 +95,6 @@ quoteIfNeeded <- function(conn, x, warn = F, ...) {
 #' @param ... Any other parameters. Currently, none is supported.
 #'
 #' @export
-#' @rdname dbDataType
 setMethod("dbDataType",
   signature(dbObj = "MonetDBConnection", obj = "ANY"),
   function(dbObj, obj, ...) {
@@ -151,7 +150,6 @@ setMethod("dbDataType",
 #' con <- dbConnect(MonetDB.R::MonetDB())
 #' dbDisconnect(con)
 #' @export
-#' @rdname dbConnect
 setMethod("dbConnect", "MonetDBDriver", function(drv,
                                                  dbname = "demo",
                                                  user = "monetdb",
@@ -280,7 +278,7 @@ valueClass = "MonetDBConnection"
 
 # dbDisconnect()
 #' @export
-#' @rdname MonetDBConnection-class
+#' @rdname dbConnect
 setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
   .mapiDisconnect(conn@connenv$socket)
   invisible(TRUE)
@@ -330,7 +328,6 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 #'   dbDisconnect(conn)
 #' }
 #' @export
-#' @rdname dbSendQuery
 setMethod(
   "dbSendQuery",
   signature(conn = "MonetDBConnection", statement = "character"),
@@ -543,7 +540,6 @@ setMethod(
 #'   dbWriteTable(conn, "iris", iris, append = TRUE, temporary = TRUE)
 #' }
 #' @export
-#' @rdname dbWriteTable
 setMethod(
   "dbWriteTable",
   signature(conn = "MonetDBConnection", name = "character", value = "ANY"),
