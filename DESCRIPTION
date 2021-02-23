@@ -3,14 +3,14 @@ Title: R DBI interface to MonetDB
 Version: 2.1.0
 Date: 2021-02-14
 Authors@R: c(
-    person(given = "Mitchell",
-           family = "Weggemans", 
-           role = c("aut", "cre"),
-           email = "mitchell.weggemans@monetdbsolutions.com"),
     person(given = "Ying",
            family = "Zhang", 
-           role = "aut", 
+           role = c("aut", "cre"),
            email = "ying.zhang@monetdbsolutions.com"),
+    person(given = "Mitchell",
+           family = "Weggemans", 
+           role = "aut", 
+           email = "mitchell.weggemans@monetdbsolutions.com"),
     person(given = "Hannes", 
            family = "Muehleisen", 
            role = "aut"),
