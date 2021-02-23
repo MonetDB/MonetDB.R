@@ -47,6 +47,7 @@ Collate:
     'MonetDBConnection.R'
     'MonetDBResult.R'
     'default.R'
+    'deprecated.R'
     'mapi.R'
     'monetdb_read_csv.R'
     'rsqlite_compatibility.R'

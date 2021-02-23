@@ -43,17 +43,6 @@ monetdbRtype <- function(dbType) {
   rtype
 }
 
-# FIXME: check if this is still the case
-#' @export
-#' @rdname MonetDBResult-class
-setMethod("fetch", signature(res = "MonetDBResult", n = "numeric"),
-  function(res, n, ...) {
-    # DBI on CRAN still uses fetch()
-    # .Deprecated("dbFetch")
-    dbFetch(res, n, ...)
-  }
-)
-
 ### DBIResult-class defined methods ###
 
 # dbBind()
