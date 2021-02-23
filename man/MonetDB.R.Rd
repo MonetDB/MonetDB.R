@@ -70,7 +70,10 @@ disconnected during the next GC with a warning.
 }
 \examples{
 library(DBI)
-# Pass more arguments as necessary to dbConnect()
-con <- dbConnect(MonetDB.R::MonetDB())
-dbDisconnect(con)
+# Only run the examples on systems with the default MonetDB connection:
+if (foundDefaultMonetDBdatabase()) {
+  # Pass more arguments as necessary to dbConnect()
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  dbDisconnect(conn)
+}
 }

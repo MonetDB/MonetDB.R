@@ -84,7 +84,6 @@ quoteIfNeeded <- function(conn, x, warn = F, ...) {
 # show()
 
 # DBIDriver > dbDataType()
-#' @name dbDataType
 #' @title dbDataType
 #' @description
 #' Determine database type for an R object
@@ -94,6 +93,7 @@ quoteIfNeeded <- function(conn, x, warn = F, ...) {
 #' @param ... Any other parameters. Currently, none is supported.
 #'
 #' @export
+#' @rdname dbDataType
 setMethod("dbDataType",
   signature(dbObj = "MonetDBConnection", obj = "ANY"),
   function(dbObj, obj, ...) {
@@ -144,9 +144,12 @@ setMethod("dbDataType",
 #'
 #' @examples
 #' library(DBI)
-#' # Pass more arguments as necessary to dbConnect()
-#' con <- dbConnect(MonetDB.R::MonetDB())
-#' dbDisconnect(con)
+#' # Only run the examples on systems with the default MonetDB connection:
+#' if (foundDefaultMonetDBdatabase()) {
+#'   # Pass more arguments as necessary to dbConnect()
+#'   conn <- dbConnect(MonetDB.R::MonetDB())
+#'   dbDisconnect(conn)
+#' }
 #' @export
 #' @rdname MonetDB.R
 setMethod("dbConnect", "MonetDBDriver", function(drv,
@@ -284,7 +287,6 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 })
 
 # dbSendQuery()
-#' @name dbSendQuery
 #' @title dbSendQuery
 #' @description
 #' FIXME: update this documentation!
@@ -327,6 +329,7 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 #'   dbDisconnect(conn)
 #' }
 #' @export
+#' @rdname dbSendQuery
 setMethod(
   "dbSendQuery",
   signature(conn = "MonetDBConnection", statement = "character"),
@@ -500,7 +503,6 @@ setMethod(
 )
 
 # dbWriteTable()
-#' @name dbWriteTable
 #' @title dbWriteTable
 #' @description
 #' Write, append or overwrite a data frame to a database table
@@ -535,10 +537,13 @@ setMethod(
 #'   dbWriteTable(conn, "mtcars", mtcars[1:5, ])
 #'   dbWriteTable(conn, "mtcars", mtcars[5:10, ], overwrite = TRUE)
 #'   dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = TRUE)
-#'   dbWriteTable(conn, "mtcars", mtcars[11:15, ], append = TRUE, csvdump = TRUE)
+#'   dbWriteTable(conn, "mtcars", mtcars[11:15, ],
+#'      append = TRUE, csvdump = TRUE)
 #'   dbWriteTable(conn, "iris", iris, append = TRUE, temporary = TRUE)
+#'   dbDisconnect(conn)
 #' }
 #' @export
+#' @rdname dbWriteTable
 setMethod(
   "dbWriteTable",
   signature(conn = "MonetDBConnection", name = "character", value = "ANY"),
@@ -728,7 +733,6 @@ if (is.null(getGeneric("dbSendUpdate"))) {
     }
   )
 }
-#' @name dbSendUpdate
 #' @title Send a data-altering SQL statement to the database.
 #' @description
 #' The function `dbSendUpdate()` is used to send a data-altering statement
@@ -738,10 +742,24 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #' execution. This is especially useful when scripting database updates, since
 #' the parameters will be automatically quoted.
 #'
-#' @inheritParams dbSendUpdateAsync
+#' The `dbSendUpdateAsync()` function works in a similar way as
+#' `dbSendUpdate()``, except that the former should be used
+#' when the database update is called from finalisers, to avoid very esoteric
+#' concurrency problems. Here, the update is not guaranteed
+#' @param conn
+#'        A MonetDB.R database connection, created using [DBI::dbConnect()] with
+#'        the [MonetDB.R()] database driver.
+#' @param statement
+#'        A SQL statement to be sent to the database, e.g. `UPDATE` or
+#'        `INSERT`.
+#' @param ...
+#'        Parameters to be bound to '?' characters in the query, similar to
+#'        JDBC.
+#' @param list A list of extra parameters.
 #' @param async
-#'        Behaves like [dbSendUpdateAsync()]? Defaults to `FALSE`.
-#' @seealso [dbSendUpdateAsync()] [DBI::dbSendQuery()]
+#'        Behaves like `dbSendUpdateAsync()` Defaults to `FALSE`.
+#' @return TRUE update was successful
+#' @seealso [DBI::dbSendQuery()]
 #'
 #' @examples
 #' library(DBI)
@@ -751,6 +769,15 @@ if (is.null(getGeneric("dbSendUpdate"))) {
 #'   dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
 #'   dbSendUpdate(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
 #'   dbSendUpdate(conn, "DROP TABLE foo")
+#'   dbDisconnect(conn)
+#' }
+#'
+#' if (foundDefaultMonetDBdatabase()) {
+#'   conn <- dbConnect(MonetDB.R())
+#'   dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
+#'   dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
+#'   dbSendUpdateAsync(conn, "DROP TABLE foo")
+#'   dbDisconnect(conn)
 #' }
 #' @export
 #' @rdname dbSendUpdate
@@ -781,45 +808,8 @@ if (is.null(getGeneric("dbSendUpdateAsync"))) {
     function(conn, statement, ...) standardGeneric("dbSendUpdateAsync")
   )
 }
-#' @name dbSendUpdateAsync
-#' @title Send a data-altering SQL statement to the database.
-#' @description
-#' The `dbSendUpdateAsync()` function is used to send a data-altering
-#' statement to a MonetDB database, e.g. `CREATE TABLE` or `INSERT`.
-#' As a convenience feature, a placeholder (i.e. the `?` character) can be used
-#' in the SQL statement, and bound to parameters given in the varargs group
-#' before execution. This is especially useful when scripting database updates,
-#' since the parameters will be automatically quoted.
-#'
-#' The `dbSendUpdateAsync()` function works in a similar way as
-#' [dbSendUpdate()], except that the former should be used
-#' when the database update is called from finalisers, to avoid very esoteric
-#' concurrency problems. Here, the update is not guaranteed
-#'
-#' @param conn
-#'        A MonetDB.R database connection, created using [DBI::dbConnect()] with
-#'        the [MonetDB.R()] database driver.
-#' @param statement
-#'        A SQL statement to be sent to the database, e.g. `UPDATE` or
-#'        `INSERT`.
-#' @param ...
-#'        Parameters to be bound to '?' characters in the query, similar to
-#'        JDBC.
-#' @param list A list of extra parameters.
-#' @return TRUE update was successful
-#' @seealso [dbSendUpdate()] [DBI::dbSendQuery()]
-#'
-#' @examples
-#' library(DBI)
-#' # Only run the examples on systems with the default MonetDB connection:
-#' if (foundDefaultMonetDBdatabase()) {
-#'   conn <- dbConnect(MonetDB.R())
-#'   dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-#'   dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
-#'   dbSendUpdateAsync(conn, "DROP TABLE foo")
-#' }
 #' @export
-#' @rdname dbSendUpdateAsync
+#' @rdname dbSendUpdate
 setMethod(
   "dbSendUpdateAsync",
   signature(conn = "MonetDBConnection", statement = "character"),
@@ -827,4 +817,3 @@ setMethod(
     dbSendUpdate(conn, statement, async = TRUE)
   }
 )
-# mapiQuote(toString(value))

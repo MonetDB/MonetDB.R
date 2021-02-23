@@ -1,5 +1,7 @@
-#' MonetDB transaction management.
-#'
+#' @include MonetDBConnection.R
+
+#' @title MonetDB transaction management.
+#' @description
 #' Functions to begin, commit or rollback SQL transactions
 #'
 #' `dbBegin()` starts a transaction. `dbCommit()` and `dbRollback()`
@@ -13,25 +15,21 @@
 #' library(DBI)
 #' # Only run the examples on systems with the default MonetDB connection:
 #' if (foundDefaultMonetDBdatabase()) {
-#'   con <- dbConnect(MonetDB.R())
-#'   dbWriteTable(con, "USarrests", datasets::USArrests, temporary = TRUE)
-#'   dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+#'   conn <- dbConnect(MonetDB.R())
+#'   dbWriteTable(conn, "USarrests", datasets::USArrests, temporary = TRUE)
+#'   dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
 #'
-#'   dbBegin(con)
-#'   dbExecute(con, 'DELETE from "USarrests" WHERE "Murder" > 1')
-#'   dbGetQuery(con, 'SELECT count(*) from "USarrests"')
-#'   dbRollback(con)
+#'   dbBegin(conn)
+#'   dbExecute(conn, 'DELETE from "USarrests" WHERE "Murder" > 1')
+#'   dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
+#'   dbRollback(conn)
 #'
 #'   # Rolling back changes leads to original count
-#'   dbGetQuery(con, 'SELECT count(*) from "USarrests"')
+#'   dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
 #'
-#'   dbRemoveTable(con, "USarrests")
-#'   dbDisconnect(con)
+#'   dbRemoveTable(conn, "USarrests")
+#'   dbDisconnect(conn)
 #' }
-#' @include MonetDBConnection.R
-#' @name transactions
-NULL
-
 #' @export
 #' @rdname transactions
 setMethod("dbBegin", "MonetDBConnection", function(conn, ...) {
@@ -60,7 +58,6 @@ if (is.null(getGeneric("dbTransaction"))) {
     function(conn, ...) standardGeneric("dbTransaction")
   )
 }
-#' @name dbTransaction
 #' @title Run a multi-statements transaction
 #' @description
 #' This method is DEPRECATED. Please use [transactions] functions
@@ -91,8 +88,10 @@ if (is.null(getGeneric("dbTransaction"))) {
 #'   dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 43, "bar")
 #'   dbRollback(conn)
 #'   dbSendUpdate(conn, "DROP TABLE foo")
+#'   dbDisconnect(conn)
 #' }
 #' @export
+#' @rdname dbTransaction
 setMethod("dbTransaction", signature(conn = "MonetDBConnection"),
   function(conn, ...) {
     dbBegin(conn)

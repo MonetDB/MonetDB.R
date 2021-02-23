@@ -12,11 +12,11 @@
 #'   dbListTables(db)
 #'   dbDisconnect(db)
 #' }
-#' @name default
+#' @rdname default
 foundDefaultMonetDBdatabase <- function(...) {
   tryCatch({
-    con <- connect_default(...)
-    dbDisconnect(con)
+    conn <- connect_default(...)
+    dbDisconnect(conn)
     TRUE
   }, error = function(...) {
     message(

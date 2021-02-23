@@ -1,5 +1,8 @@
-#' monetdb.read.csv
-#'
+#' @include MonetDBConnection.R MonetDBResult.R
+#' @importFrom utils read.csv write.table
+
+#' @title monetdb.read.csv
+#' @description
 #' Instruct MonetDB to read a CSV file, optionally also create the table for it.
 #' Note that this causes MonetDB to read a file on the machine where the server
 #' is running, not on the machine where the R client runs.
@@ -52,13 +55,10 @@
 #'     'FROM iris GROUP BY "Species"')
 #'   )
 #'   dbRemoveTable(conn, "iris")
+#'   dbDisconnect(conn)
 #' }
-#' @name monetdb.read.csv
-#' @include MonetDBConnection.R MonetDBResult.R
-#' @importFrom utils read.csv write.table
-NULL
-
 #' @export
+#' @rdname monetdb.read.csv
 monetdb.read.csv <-
   function(conn, files, tablename, header = TRUE, best.effort = FALSE,
            delim = ",", newline = "\\n", quote = "\"", create = TRUE,
@@ -106,6 +106,7 @@ monetdb.read.csv <-
     dbCommit(conn)
     on.exit(NULL)
   }
+
 #' @export
 #' @rdname monetdb.read.csv
 monet.read.csv <- monetdb.read.csv

@@ -1,12 +1,11 @@
-#' Deprecated functions
-#'
-#' Deprecated functions kept for backward compatibility purpose.
-#'
 #' @include MonetDBResult.R
-#' @name deprecated
-NULL
 
-#' A wrapper for [dbFetch()]. Needed because DBI on CRAN still uses fetch()
+#' @title Deprecated functions
+#' @description
+#' Deprecated functions are kept here for backward compatibility purpose.
+#'
+#' The function `fetch()` is a wrapper for [MonetDB.R::dbFetch()], which is
+#' needed because DBI on CRAN still uses fetch()
 #' @inheritParams DBI::dbFetch
 #' @seealso [dbFetch()]
 #' @export

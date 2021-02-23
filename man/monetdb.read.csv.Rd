@@ -5,6 +5,22 @@
 \alias{monet.read.csv}
 \title{monetdb.read.csv}
 \usage{
+monetdb.read.csv(
+  conn,
+  files,
+  tablename,
+  header = TRUE,
+  best.effort = FALSE,
+  delim = ",",
+  newline = "\\\\n",
+  quote = "\\"",
+  create = TRUE,
+  col.names = NULL,
+  lower.case.names = FALSE,
+  sep = delim,
+  ...
+)
+
 monet.read.csv(
   conn,
   files,
@@ -75,6 +91,7 @@ if (foundDefaultMonetDBdatabase()) {
     'FROM iris GROUP BY "Species"')
   )
   dbRemoveTable(conn, "iris")
+  dbDisconnect(conn)
 }
 }
 \seealso{

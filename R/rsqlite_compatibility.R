@@ -1,18 +1,16 @@
-#' RSQLite Compatibility Functions
-#'
+#' @include MonetDBConnection.R MonetDBResult.R
+
+if (is.null(getGeneric("isIdCurrent"))) {
+  setGeneric("isIdCurrent", function(dbObj, ...) standardGeneric("isIdCurrent"))
+}
+#' @title RSQLite Compatibility Functions
+#' @description
 #' Dummy implementations of functions used by RSQLite but not MonetDB so as to
 #' avoid unexpected errors for users who migrate from RSQLite to MonetDB.
 #'
 #' @param dbObj The database object, a `MonetDBResult` or `MonetDBConnection`.
 #' @param ... Any other parameters. Currently, none is supported.
 #' @seealso `RSQLite::isIdCurrent()` `RSQLite::initExtension()`
-#' @name RSQLite-compatibility
-#' @include MonetDBConnection.R MonetDBResult.R
-NULL
-
-if (is.null(getGeneric("isIdCurrent"))) {
-  setGeneric("isIdCurrent", function(dbObj, ...) standardGeneric("isIdCurrent"))
-}
 #' @export
 #' @rdname RSQLite-compatibility
 setMethod("isIdCurrent", signature(dbObj = "MonetDBResult"),
