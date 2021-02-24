@@ -22,9 +22,9 @@ failure, making it suitable for use in tests.
 library(DBI)
 if (foundDefaultMonetDBdatabase()) {
   conn <- monetdbDefault()
-  dbWriteTable(conn, 'mtcars', mtcars)
-  dbReadTable(conn, 'mtcars')
-  dbRemoveTable(conn, 'mtcars')
+  dbWriteTable(conn, "mtcars", mtcars)
+  dbReadTable(conn, "mtcars")
+  dbRemoveTable(conn, "mtcars")
   dbListTables(conn)
   dbDisconnect(conn)
 }

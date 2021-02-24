@@ -37,7 +37,7 @@ if (foundDefaultMonetDBdatabase()) {
   # Run query to get results as dataframe
   DBI::dbGetQuery(conn, "SELECT * FROM usarrests LIMIT 3")
 
-  # Send query to pull requests in batches
+  # Send query to pull results in batches
   res <- dbSendQuery(conn, "SELECT * FROM usarrests")
   dbFetch(res, n = 2)
   dbFetch(res, n = 2)

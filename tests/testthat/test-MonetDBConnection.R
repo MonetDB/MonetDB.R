@@ -1,32 +1,58 @@
 library(DBI)
 
-conn <- dbConnect(MonetDB.R::MonetDB())
-
 # Check if we can start the database.
 # This only works if the daemon and the database have been started.
+# FIXME: this test doesn't do what's said in the test documentation
 test_that("db starts", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+
   expect_equal(dbIsValid(conn), TRUE)
   expect_that(conn, is_a("MonetDBConnection"))
 })
 
-
-# Checks if we can disconnect
-# and the database no longer can be queried.
-test_that("we can disconnect", {
-  dbDisconnect(conn)
-
-  # Check if we can no longer query the database.
-  # sidenote: you can also use `dbReadTable` for this.
-  expect_error(
-    DBI::dbGetQuery(
-      conn,
-      "select tables.name from tables where system.tables=false;"
-    ),
-    "invalid connection"
+test_that("we can connect with customised parameter values", {
+  conn <- dbConnect(MonetDB.R::MonetDB(),
+    dbname = "demo", user = "monetdb",
+    password = "monetdb", host = "localhost", port = 50000L
   )
+  on.exit(dbDisconnect(conn))
+
+  expect_equal(dbExistsTable(conn, "tables"), TRUE)
 })
 
+test_that("we can connect with a URL", {
+  conn <- dbConnect(MonetDB.R::MonetDB(), "monetdb://localhost:50000/demo")
+  on.exit(dbDisconnect(conn))
+
+  expect_equal(dbExistsTable(conn, "tables"), TRUE)
+})
+
+test_that("an unkonw connection parameter is ignored", {
+  conn <- dbConnect(MonetDB.R::MonetDB(),
+    dbname = "demo", user = "monetdb",
+    password = "monetdb", host = "localhost", port = 50000L,
+    foo = "bar"
+  )
+  on.exit(dbDisconnect(conn))
+
+  expect_equal(dbExistsTable(conn, "tables"), TRUE)
+})
+
+test_that("querying closed connection throws an error", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+
+  expect_equal(dbExistsTable(conn, "tables"), TRUE)
+  dbDisconnect(conn)
+  expect_error(dbExistsTable(conn, "tables"), "invalid connection")
+})
+
+# This is only a sanity check if anything major in the MonetDB user interface
+# has changed
 test_that("the MonetDB reserved keywords are still what we are aware of", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+
   keywords <- list(
     "ADD", "ADMIN", "AFTER", "AGGREGATE", "ALL", "ALTER",
     "ALWAYS", "ANALYZE", "AND", "ANY", "ASC", "ASYMMETRIC", "AT",
