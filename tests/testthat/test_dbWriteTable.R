@@ -16,8 +16,10 @@ test_that("special characters work", {
   pi <- enc2utf8("U+03C0")
 
   DBI::dbExecute(conn, paste0("CREATE TABLE ", table_name, "(x TEXT);"))
-  DBI::dbExecute(conn,
-                 paste0("INSERT INTO ", table_name, " VALUES ('U+03C0'); "))
+  DBI::dbExecute(
+    conn,
+    paste0("INSERT INTO ", table_name, " VALUES ('U+03C0'); ")
+  )
 
   expect_equal(DBI::dbGetQuery(conn, "SELECT * FROM specialcharsfoo")$x, pi)
 
@@ -92,8 +94,8 @@ test_that("dbWriteTable with csvdump works as expected", {
 test_that("we can drop a table", {
   dbRemoveTable(conn, "mtcars")
   expect_equal(dbExistsTable(conn, "mtcars"), F)
-  #dbRemoveTable(conn, "foo")
-  #dbRemoveTable(conn, "foo1")
+  # dbRemoveTable(conn, "foo")
+  # dbRemoveTable(conn, "foo1")
 })
 
 test_that("csv import works", {

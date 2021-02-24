@@ -10,11 +10,12 @@
 #' @seealso [dbFetch()]
 #' @export
 #' @rdname deprecated
-setMethod("fetch", signature(res = "MonetDBResult", n = "numeric"),
-          function(res, n, ...) {
-            # .Deprecated("dbFetch")
-            dbFetch(res, n, ...)
-          }
+setMethod(
+  "fetch", signature(res = "MonetDBResult", n = "numeric"),
+  function(res, n, ...) {
+    # .Deprecated("dbFetch")
+    dbFetch(res, n, ...)
+  }
 )
 
 # dbTransaction() #DEPRECATED
@@ -63,10 +64,11 @@ setGeneric(
 
 #' @export
 #' @rdname dbTransaction
-setMethod("dbTransaction", signature(conn = "MonetDBConnection"),
-          function(conn, ...) {
-            dbBegin(conn)
-            warning("dbTransaction() is deprecated, use dbBegin() from now.")
-            invisible(TRUE)
-          }
+setMethod(
+  "dbTransaction", signature(conn = "MonetDBConnection"),
+  function(conn, ...) {
+    dbBegin(conn)
+    warning("dbTransaction() is deprecated, use dbBegin() from now.")
+    invisible(TRUE)
+  }
 )

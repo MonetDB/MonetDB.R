@@ -144,8 +144,8 @@ setMethod(
     if (length(value[[1]]) > 0) {
       if (!is.data.frame(value)) {
         value <- as.data.frame(value,
-                               row.names = 1:length(value[[1]]),
-                               stringsAsFactors = F
+          row.names = 1:length(value[[1]]),
+          stringsAsFactors = F
         )
       }
     } else {
@@ -198,8 +198,8 @@ setMethod(
     if (csvdump) {
       tmp <- tempfile(fileext = ".csv")
       write.table(value, tmp,
-                  sep = ",", quote = TRUE, row.names = FALSE,
-                  col.names = FALSE, na = "", fileEncoding = "UTF-8"
+        sep = ",", quote = TRUE, row.names = FALSE,
+        col.names = FALSE, na = "", fileEncoding = "UTF-8"
       )
       dbSendQuery(conn, paste0(
         "COPY INTO ", qname, " FROM '", tmp,
@@ -209,7 +209,7 @@ setMethod(
     }
     else {
       vins <- paste("(", paste(rep("?", length(value)), collapse = ", "), ")",
-                    sep = ""
+        sep = ""
       )
       # chunk some inserts together so we do not need to do a round trip for
       # every one
@@ -246,7 +246,7 @@ setMethod(
   function(conn, name, ...) {
     name <- quoteIfNeeded(conn, name)
     return(as.character(name) %in%
-             dbListTables(conn, sys_tables = T))
+      dbListTables(conn, sys_tables = T))
   }
 )
 

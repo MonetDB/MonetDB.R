@@ -17,8 +17,10 @@
 #'   conn <- dbConnect(MonetDB.R())
 #'
 #'   dbBegin(conn)
-#'   dbWriteTable(conn, "USarrests", datasets::USArrests, temporary = TRUE,
-#'     transaction = FALSE)
+#'   dbWriteTable(conn, "USarrests", datasets::USArrests,
+#'     temporary = TRUE,
+#'     transaction = FALSE
+#'   )
 #'   DBI::dbGetQuery(conn, 'SELECT count(*) from "USarrests"')
 #'   dbCommit(conn)
 #'

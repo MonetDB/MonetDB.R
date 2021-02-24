@@ -78,7 +78,8 @@ valueClass = "data.frame"
 # most of the heavy lifting here
 #' @export
 #' @rdname MonetDBResult-class
-setMethod("dbFetch", signature(res = "MonetDBResult", n = "numeric"),
+setMethod(
+  "dbFetch", signature(res = "MonetDBResult", n = "numeric"),
   function(res, n, ...) {
     if (!res@env$success) {
       stop(
@@ -252,13 +253,14 @@ setMethod("dbHasCompleted", "MonetDBResult", function(res, ...) {
 # dbIsValid()
 #' @export
 #' @rdname MonetDBResult-class
-setMethod("dbIsValid", signature(dbObj = "MonetDBResult"),
-          function(dbObj, ...) {
-            if (dbObj@env$info$type == Q_TABLE) {
-              return(dbObj@env$open)
-            }
-            return(invisible(TRUE))
-          }
+setMethod(
+  "dbIsValid", signature(dbObj = "MonetDBResult"),
+  function(dbObj, ...) {
+    if (dbObj@env$info$type == Q_TABLE) {
+      return(dbObj@env$open)
+    }
+    return(invisible(TRUE))
+  }
 )
 
 # dbQuoteIdentifier()
@@ -268,4 +270,3 @@ setMethod("dbIsValid", signature(dbObj = "MonetDBResult"),
 # dbQuoteString()
 
 # dbUnquoteIdentifier()
-

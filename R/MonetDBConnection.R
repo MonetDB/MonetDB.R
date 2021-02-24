@@ -141,18 +141,20 @@ setMethod("dbDataType",
 #' if (foundDefaultMonetDBdatabase()) {
 #'   # Connect to the default database
 #'   conn <- dbConnect(MonetDB.R::MonetDB())
-#'   DBI::dbGetQuery(conn, 'select 42')
+#'   DBI::dbGetQuery(conn, "select 42")
 #'   dbDisconnect(conn)
 #'
 #'   # Connect to a database with customised parameter values
-#'   conn <- dbConnect(MonetDB.R::MonetDB(), dbname = "demo", user = "monetdb",
-#'     password = "monetdb", host = "localhost", port = 50000L)
-#'   DBI::dbGetQuery(conn, 'select 43')
+#'   conn <- dbConnect(MonetDB.R::MonetDB(),
+#'     dbname = "demo", user = "monetdb",
+#'     password = "monetdb", host = "localhost", port = 50000L
+#'   )
+#'   DBI::dbGetQuery(conn, "select 43")
 #'   dbDisconnect(conn)
 #'
 #'   # Connect to a database using a URL string
 #'   conn <- dbConnect(MonetDB.R::MonetDB(), "monetdb://localhost:50000/demo")
-#'   DBI::dbGetQuery(conn, 'select 44')
+#'   DBI::dbGetQuery(conn, "select 44")
 #'   dbDisconnect(conn)
 #' }
 #' @export

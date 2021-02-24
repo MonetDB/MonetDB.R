@@ -52,8 +52,8 @@
 #'   DBI::dbGetQuery(conn, paste(
 #'     'SELECT "Species", avg("Sepal.Length"), ',
 #'     '       avg("Sepal.Width"), avg("Petal.Length"), avg("Petal.Width") ',
-#'     'FROM iris GROUP BY "Species"')
-#'   )
+#'     'FROM iris GROUP BY "Species"'
+#'   ))
 #'   dbRemoveTable(conn, "iris")
 #'   dbDisconnect(conn)
 #' }

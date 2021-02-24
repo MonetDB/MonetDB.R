@@ -9,26 +9,29 @@
 #' library(DBI)
 #' if (foundDefaultMonetDBdatabase()) {
 #'   conn <- monetdbDefault()
-#'   dbWriteTable(conn, 'mtcars', mtcars)
-#'   dbReadTable(conn, 'mtcars')
-#'   dbRemoveTable(conn, 'mtcars')
+#'   dbWriteTable(conn, "mtcars", mtcars)
+#'   dbReadTable(conn, "mtcars")
+#'   dbRemoveTable(conn, "mtcars")
 #'   dbListTables(conn)
 #'   dbDisconnect(conn)
 #' }
 #' @rdname default
 foundDefaultMonetDBdatabase <- function() {
-  tryCatch({
-    conn <- dbConnect(MonetDB.R())
-    dbDisconnect(conn)
-    TRUE
-  }, error = function(...) {
-    message(
-      "Could not fine the default MonetDB database.\n",
-      "If MonetDB is running, check that it is serving the default database\n",
-      "`demo` on `localhost:50001`\n"
-    )
-    FALSE
-  })
+  tryCatch(
+    {
+      conn <- dbConnect(MonetDB.R())
+      dbDisconnect(conn)
+      TRUE
+    },
+    error = function(...) {
+      message(
+        "Could not find the default MonetDB database.\n",
+        "If MonetDB is running, check that it is serving the default database\n",
+        "`demo` on `localhost:50001`\n"
+      )
+      FALSE
+    }
+  )
 }
 
 #' @description
@@ -38,9 +41,12 @@ foundDefaultMonetDBdatabase <- function() {
 #' @export
 #' @rdname default
 monetdbDefault <- function() {
-  tryCatch({
-    dbConnect(MonetDB.R())
-  }, error = function(...) {
-    testthat::skip("Default database not available")
-  })
+  tryCatch(
+    {
+      dbConnect(MonetDB.R())
+    },
+    error = function(...) {
+      testthat::skip("Default database not available")
+    }
+  )
 }

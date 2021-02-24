@@ -13,8 +13,9 @@ setGeneric("isIdCurrent", function(dbObj, ...) standardGeneric("isIdCurrent"))
 
 #' @export
 #' @rdname RSQLite-compatibility
-setMethod("isIdCurrent", signature(dbObj = "MonetDBResult"),
-          function(dbObj, ...) {
+setMethod(
+  "isIdCurrent", signature(dbObj = "MonetDBResult"),
+  function(dbObj, ...) {
     .Deprecated("dbIsValid")
     dbIsValid(dbObj)
   }
@@ -22,7 +23,8 @@ setMethod("isIdCurrent", signature(dbObj = "MonetDBResult"),
 
 #' @export
 #' @rdname RSQLite-compatibility
-setMethod("isIdCurrent", signature(dbObj = "MonetDBConnection"),
+setMethod(
+  "isIdCurrent", signature(dbObj = "MonetDBConnection"),
   function(dbObj, ...) {
     .Deprecated("dbIsValid")
     dbIsValid(dbObj)
@@ -38,7 +40,8 @@ setGeneric(
 
 #' @export
 #' @rdname RSQLite-compatibility
-setMethod("initExtension", signature(dbObj = "MonetDBConnection"),
+setMethod(
+  "initExtension", signature(dbObj = "MonetDBConnection"),
   function(dbObj, ...) {
     .Deprecated(msg = "initExtension() is not required for MonetDB")
   }
