@@ -26,9 +26,9 @@ test_that("special characters work", {
 
   tryCatch(
     {
+      val <- enc2utf8("\u00e5")
       dbSendUpdate(conn, "CREATE TABLE tbl (x TEXT)")
       dbSendUpdate(conn, "INSERT INTO tbl VALUES ('\\u00e5')")
-      val <- enc2utf8("\u00e5")
       expect_equal(DBI::dbGetQuery(conn, "SELECT * FROM tbl")$x, val)
       expect_equal(
         DBI::dbGetQuery(conn, "SELECT * FROM tbl WHERE x = '\\u00e5'")$x, val
@@ -40,7 +40,7 @@ test_that("special characters work", {
   )
 })
 
-test_that("UUID data type is recognised", {
+test_that("UUID data works", {
   conn <- dbConnect(MonetDB.R::MonetDB())
   on.exit(dbDisconnect(conn))
 
@@ -50,6 +50,25 @@ test_that("UUID data type is recognised", {
       dbSendUpdate(conn, "CREATE TABLE tbl (id UUID, txt TEXT)")
       dbSendUpdate(conn, paste0("INSERT INTO tbl VALUES ('", uuid, "', 'foo')"))
       expect_equal(DBI::dbGetQuery(conn, "SELECT * FROM tbl")$id, uuid)
+    },
+    finally = {
+      expect_equal(dbRemoveTable(conn, "tbl"), T)
+    }
+  )
+})
+
+test_that("JSON data works", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+
+  tryCatch(
+    {
+      jsn <- "{\"val\": 42}"
+      dbSendUpdate(conn, "CREATE TABLE tbl (jsn JSON)")
+      dbSendUpdate(conn, paste0("INSERT INTO tbl VALUES ('", jsn, "')"))
+      expect_equal(
+        DBI::dbGetQuery(conn, "SELECT json.number(jsn) as v FROM tbl")$v, 42
+      )
     },
     finally = {
       expect_equal(dbRemoveTable(conn, "tbl"), T)

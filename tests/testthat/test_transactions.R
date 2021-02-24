@@ -4,14 +4,20 @@ test_that("we can commit a transaction", {
   conn <- dbConnect(MonetDB.R::MonetDB())
   on.exit(dbDisconnect(conn))
 
-  dbBegin(conn)
-  # we need to disable transaction here,
-  # because it doesn't support nested transactions
-  dbWriteTable(conn, "mtcars", mtcars[1:5, ], transaction = F, overwrite = T)
-  dbCommit(conn)
+  tryCatch(
+    {
+      dbBegin(conn)
+      # we need to disable transaction here,
+      # because it doesn't support nested transactions
+      dbWriteTable(conn, "mtcars", mtcars[1:5, ], transaction = F, overwrite = T)
+      dbCommit(conn)
 
-  expect_equal("mtcars" %in% dbListTables(conn), T)
-  dbRemoveTable(conn, "mtcars")
+      expect_equal("mtcars" %in% dbListTables(conn), T)
+    },
+    finally = {
+      dbRemoveTable(conn, "mtcars")
+    }
+  )
 })
 
 test_that("we can rollback a transaction", {
