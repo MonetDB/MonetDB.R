@@ -511,9 +511,9 @@ setMethod("dbIsValid", "MonetDBConnection", function(dbObj, ...) {
 #'   conn <- dbConnect(MonetDB.R())
 #'
 #'   dbSendUpdate(conn, "CREATE TABLE foo(a INT,b VARCHAR(100))")
-#'   dbSendUpdate(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 42, "bar")
+#'   dbSendUpdate(conn, "INSERT INTO foo VALUES(?,?)", 42, "bar")
 #'
-#'   dbSendUpdateAsync(conn, "PREPARE INSERT INTO foo VALUES(?,?)", 24, "bar")
+#'   dbSendUpdateAsync(conn, "INSERT INTO foo VALUES(?,?)", 24, "bar")
 #'   dbSendUpdateAsync(conn, "DROP TABLE foo")
 #'
 #'   dbDisconnect(conn)
@@ -562,6 +562,6 @@ setMethod(
   "dbSendUpdateAsync",
   signature(conn = "MonetDBConnection", statement = "character"),
   function(conn, statement, ..., list = NULL) {
-    dbSendUpdate(conn, statement, async = TRUE)
+    dbSendUpdate(conn, statement, ..., list, async = TRUE)
   }
 )
