@@ -19,9 +19,15 @@ setClass("MonetDBResult",
 
 # type mapping matrix
 monetTypes <- rep(c(
-  "integer", "numeric", "character", "character", "logical",
+  "integer",
+  "numeric",
+  "character",
+  "character",
+  "character",
+  "character",
+  "logical",
   "raw"
-), c(5, 6, 4, 6, 1, 1))
+), c(5, 6, 4, 6, 1, 1, 1, 1))
 names(monetTypes) <- c(
   # month_interval is the difference between date cols and int
   c("WRD", "TINYINT", "SMALLINT", "INT", "MONTH_INTERVAL"),
@@ -29,6 +35,8 @@ names(monetTypes) <- c(
   c("BIGINT", "HUGEINT", "REAL", "DOUBLE", "DECIMAL", "SEC_INTERVAL"),
   c("CHAR", "VARCHAR", "CLOB", "STR"),
   c("INTERVAL", "DATE", "TIME", "TIMETZ", "TIMESTAMP", "TIMESTAMPTZ"),
+  c("UUID"),
+  c("JSON"),
   c("BOOLEAN"),
   c("BLOB")
 )
