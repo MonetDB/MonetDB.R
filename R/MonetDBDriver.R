@@ -47,7 +47,6 @@ setMethod("dbUnloadDriver", "MonetDBDriver", function(drv, ...) {
 # dbDataType()
 
 # dbIsValid()
-# FIXME: is this rdname correct? Or should it be MonetDBResult-class?
 #' @export
 #' @rdname MonetDBDriver-class
 setMethod("dbIsValid", "MonetDBDriver", function(dbObj, ...) {

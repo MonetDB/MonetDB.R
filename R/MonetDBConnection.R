@@ -292,7 +292,6 @@ setMethod("dbDisconnect", "MonetDBConnection", function(conn, ...) {
 # dbSendQuery()
 #' @title dbSendQuery
 #' @description
-#' FIXME: update this documentation!
 #' Execute a SQL statement on a database connection. This one does all the work
 #' in this class.
 #'
