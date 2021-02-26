@@ -3,9 +3,12 @@
 
 #' @title monetdb.read.csv
 #' @description
-#' Instruct MonetDB to read a CSV file, optionally also create the table for it.
-#' Note that this causes MonetDB to read a file on the machine where the server
-#' is running, not on the machine where the R client runs.
+#' Instruct MonetDB to read a CSV file and use MonetDB's bulk data loading
+#' feature `COPY INTO` to load the CSV data into a database table. By default,
+#' `monetdb.read.csv()` also creates the table.
+#'
+#' Note that this causes MonetDB to read a file on the machine where the
+#' MonetDB server is running, not on the machine where the R client runs.
 #'
 #' @param conn
 #'        A MonetDB.R database connection, created using [DBI::dbConnect] with
@@ -38,7 +41,7 @@
 #'        Alias for `delim`
 #' @param ...
 #'        Any other parameters. Ignored.
-#' @return Returns the number of rows imported if successful.
+#' @return NULL if successful; otherwise, error messages
 #' @seealso [utils::read.csv]
 #'
 #' @examples

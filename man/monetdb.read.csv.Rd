@@ -70,12 +70,15 @@ used}
 \item{...}{Any other parameters. Ignored.}
 }
 \value{
-Returns the number of rows imported if successful.
+NULL if successful; otherwise, error messages
 }
 \description{
-Instruct MonetDB to read a CSV file, optionally also create the table for it.
-Note that this causes MonetDB to read a file on the machine where the server
-is running, not on the machine where the R client runs.
+Instruct MonetDB to read a CSV file and use MonetDB's bulk data loading
+feature \verb{COPY INTO} to load the CSV data into a database table. By default,
+\code{monetdb.read.csv()} also creates the table.
+
+Note that this causes MonetDB to read a file on the machine where the
+MonetDB server is running, not on the machine where the R client runs.
 }
 \examples{
 library(DBI)
