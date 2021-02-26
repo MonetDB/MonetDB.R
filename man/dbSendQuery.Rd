@@ -19,7 +19,6 @@ ignored).}
 \item{async}{Execute the query in Async mode? Default: \code{FALSE}.}
 }
 \description{
-FIXME: update this documentation!
 Execute a SQL statement on a database connection. This one does all the work
 in this class.
 
