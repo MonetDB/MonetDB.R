@@ -24,12 +24,12 @@
 #'        Use best effort flag when reading csv files and continue importing
 #'        even if parsing of fields/lines fails.
 #' @param delim
-#'        Field separator in CSV file.
+#'        Field separator in the CSV file.
 #' @param newline
-#'        Newline in CSV file, usually `\\n` for UNIX-like systems and
-#'        `\\r\\r` on Windows.
+#'        Line separator in the CSV file, usually `\\n` for UNIX-like systems
+#'        and `\\r\\n` on Windows.
 #' @param quote
-#'        Quote character(s) in CSV file.
+#'        Quote character(s) for strings in the CSV file.
 #' @param create
 #'        Create table before importing?
 #' @param col.names
@@ -38,7 +38,7 @@
 #' @param lower.case.names
 #'        Convert all column names to lowercase in the database?
 #' @param sep
-#'        Alias for `delim`
+#'        Alias for `delim`. When specified, overwrite the value of `delim`.
 #' @param ...
 #'        Any other parameters. Ignored.
 #' @return NULL if successful; otherwise, error messages
