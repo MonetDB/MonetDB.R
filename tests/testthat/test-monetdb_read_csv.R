@@ -100,10 +100,6 @@ test_that("we can load data to an existing table, i.e. create = FALSE", {
   expect_equal(res$`%2`, length(unique(CO2[, 2])))
 })
 
-# FIXME 1: lower.case.names is currently ignored. So, we're not actually testing
-#          the conversion of column names to lower case. When this parameter is
-#          implemented, this test should be updated accordingly.
-# FIXME 2: the same holds for col.names
 test_that("Convert all column names to lower case in the database works", {
   conn <- monetdbDefault()
   on.exit(dbDisconnect(conn))
@@ -129,3 +125,14 @@ test_that("Convert all column names to lower case in the database works", {
   expect_equal(res$name[4], "conc")
   expect_equal(res$name[5], "uptake")
 })
+
+# FIXME 1: lower.case.names is currently ignored. So, the above test is not
+#          really testing the conversion of column names to lower case.
+#          When this parameter is implemented, this test should be updated
+#          accordingly.
+# FIXME 2: the same holds for col.names
+# FIXME 3: we're not use a different data set for each test because some string
+#          columns have the type "integer", while some integer columns are
+#          exported as quotes strings in the CSV files. See also
+# stackoverflow.com/questions/38529998/r-string-column-is-considered-as-integer
+
