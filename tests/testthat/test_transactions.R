@@ -28,5 +28,5 @@ test_that("we can rollback a transaction", {
   dbWriteTable(conn, "mtcars", mtcars[1:5, ], transaction = F, overwrite = T)
   dbRollback(conn)
 
-  expect_equal(identical(dbListTables(conn), character(0)), T)
+  expect_equal(dbExistsTable(conn, "mtcars"), F)
 })
