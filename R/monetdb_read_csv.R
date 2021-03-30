@@ -34,9 +34,10 @@
 #'        Create table before importing?
 #' @param col.names
 #'        Optional column names in case the ones from CSV file should not be
-#'        used
+#'        used. Currently ignored.
 #' @param lower.case.names
 #'        Convert all column names to lowercase in the database?
+#'        Currently ignored.
 #' @param sep
 #'        Alias for `delim`. When specified, overwrite the value of `delim`.
 #' @param ...
@@ -76,13 +77,13 @@ monetdb.read.csv <-
       if (length(files) > 1) {
         DBI::dbCreateTable(
           conn, tablename,
-          read.csv(files[1], header = header, sep = delim)
+          read.csv(files[1], header = header, sep = delim, nrows = 3)
         )
       }
       else {
         DBI::dbCreateTable(
           conn, tablename,
-          read.csv(files, header = header, sep = delim)
+          read.csv(files, header = header, sep = delim, nrows = 3)
         )
       }
     }

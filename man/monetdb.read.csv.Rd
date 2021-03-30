@@ -61,9 +61,10 @@ and \verb{\\\\r\\\\n} on Windows.}
 \item{create}{Create table before importing?}
 
 \item{col.names}{Optional column names in case the ones from CSV file should not be
-used}
+used. Currently ignored.}
 
-\item{lower.case.names}{Convert all column names to lowercase in the database?}
+\item{lower.case.names}{Convert all column names to lowercase in the database?
+Currently ignored.}
 
 \item{sep}{Alias for \code{delim}. When specified, overwrite the value of \code{delim}.}
 
