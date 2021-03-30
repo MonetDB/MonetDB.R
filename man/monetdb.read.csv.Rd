@@ -51,12 +51,12 @@ names of the CSV files to be imported.}
 \item{best.effort}{Use best effort flag when reading csv files and continue importing
 even if parsing of fields/lines fails.}
 
-\item{delim}{Field separator in CSV file.}
+\item{delim}{Field separator in the CSV file.}
 
-\item{newline}{Newline in CSV file, usually \verb{\\\\n} for UNIX-like systems and
-\verb{\\\\r\\\\r} on Windows.}
+\item{newline}{Line separator in the CSV file, usually \verb{\\\\n} for UNIX-like systems
+and \verb{\\\\r\\\\n} on Windows.}
 
-\item{quote}{Quote character(s) in CSV file.}
+\item{quote}{Quote character(s) for strings in the CSV file.}
 
 \item{create}{Create table before importing?}
 
@@ -65,7 +65,7 @@ used}
 
 \item{lower.case.names}{Convert all column names to lowercase in the database?}
 
-\item{sep}{Alias for \code{delim}}
+\item{sep}{Alias for \code{delim}. When specified, overwrite the value of \code{delim}.}
 
 \item{...}{Any other parameters. Ignored.}
 }

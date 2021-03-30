@@ -71,7 +71,7 @@ monetdb.read.csv <-
     dbBegin(conn)
     on.exit(tryCatch(dbRollback(conn), error = function(e) {}))
 
-    # Create the table.
+    # Create the table. dbCreateTable automatically quotes the table name.
     if (create) {
       if (length(files) > 1) {
         DBI::dbCreateTable(
@@ -87,7 +87,10 @@ monetdb.read.csv <-
       }
     }
 
-    query <- paste0("COPY OFFSET 2 INTO ", tablename, " FROM ")
+    query <- paste0(
+      "COPY OFFSET 2 INTO ", quoteIfNeeded(conn, tablename),
+      " FROM "
+    )
 
     # Loop for multi file support.
     for (i in seq_along(files)) {
