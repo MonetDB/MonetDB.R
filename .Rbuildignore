@@ -3,6 +3,8 @@
 ^MonetDB\.R\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^README\.Rmd$
 ^\.RData$
 ^\.Rhistory$
 ^CODE_OF_CONDUCT\.md$
+^tests/testthat/testthat-problems\.rds$

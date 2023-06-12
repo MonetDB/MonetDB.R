@@ -24,12 +24,11 @@ Authors@R: c(
 Description: 
     Fully R 'DBI'-compliant interface to 'MonetDB' <https://www.monetdb.org>, 
     an open-source columnar RDBMS.
-License: MPL (== 2.0)
-Copyright: 1997 - July 2008 CWI, August 2008 - 2021 MonetDB B.V.
+License: MPL (== 2.0) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Depends:
     R (>= 3.3.3)
 Imports:
@@ -37,7 +36,8 @@ Imports:
     digest (>= 0.6.4),
     methods
 Suggests: 
-    testthat
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 URL: https://github.com/MonetDB/MonetDB.R
 BugReports: https://github.com/MonetDB/MonetDB.R/issues
 SystemRequirements: MonetDB (>= Jun2020), available from https://www.monetdb.org/Downloads

@@ -1,5 +1,9 @@
 .Rproj.user
 .Rhistory
 .RData
+.httr-oauth
+.DS_Store
+.quarto
+tests/testthat/testthat-problems.rds
 src/*.so
 src/*.o
