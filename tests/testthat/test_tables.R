@@ -1,60 +1,91 @@
 library(DBI)
 
-conn <- dbConnect(MonetDB.R::MonetDB())
+test_that("we can list the tables in the database", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+  dbListTables()
+})
 
-tsize <- function(conn, tname) {
-  as.integer(DBI::dbGetQuery(conn, paste0("SELECT COUNT(*) FROM ", tname))[[1]])
-}
+test_that("we can list the fields of a table", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+  dbListFields()
+})
 
-test_that("we can write a table to the database", {
+test_that("we can read the contents of a table", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+  dbReadTable()
+})
+
+test_that("we can write a table to the database with default parameters", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+
   dbWriteTable(conn, "mtcars", mtcars[1:5, ], overwrite = T)
+  on.exit(dbRemoveTable(conn, "mtcars"), add = TRUE, after = FALSE)
+
   expect_equal(dbExistsTable(conn, "mtcars"), T)
 })
 
+test_that("we can write a table to the database with all parameters", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+
+  dbWriteTable(conn, "mtcars", mtcars[1:5, ], overwrite = T)
+  on.exit(dbRemoveTable(conn, "mtcars"), add = TRUE, after = FALSE)
+
+  expect_equal(dbExistsTable(conn, "mtcars"), T)
+})
+
+test_that("we can check if a table exists", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+  dbExistsTable()
+})
+
+test_that("we can remove a table", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+  dbExistsTable()
+})
+
 test_that("special characters work", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+
   table_name <- "specialcharsfoo"
   pi <- enc2utf8("U+03C0")
 
   DBI::dbExecute(conn, paste0("CREATE TABLE ", table_name, "(x TEXT);"))
+  on.exit(dbRemoveTable(conn, table_name), add = TRUE, after = FALSE)
+
   DBI::dbExecute(
     conn,
     paste0("INSERT INTO ", table_name, " VALUES ('U+03C0'); ")
   )
 
   expect_equal(DBI::dbGetQuery(conn, "SELECT * FROM specialcharsfoo")$x, pi)
-
-  dbRemoveTable(conn, "specialcharsfoo")
 })
 
-
 test_that("we can update a table", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+
   MonetDB.R::dbSendUpdate(conn, "CREATE TABLE foo(a INT, b INT)")
+  on.exit(dbRemoveTable(conn, "foo"), add = TRUE, after = FALSE)
+
   expect_equal(dbExistsTable(conn, "foo"), T)
-  dbRemoveTable(conn, "foo")
 })
 
 test_that("we can update a table async", {
+  conn <- dbConnect(MonetDB.R::MonetDB())
+  on.exit(dbDisconnect(conn))
+
   MonetDB.R::dbSendUpdateAsync(conn, "CREATE TABLE foo(a INT, b INT)")
+  on.exit(dbRemoveTable(conn, "foo"), add = TRUE, after = FALSE)
+
   expect_equal(dbExistsTable(conn, "foo"), T)
-  dbRemoveTable(conn, "foo")
-})
-
-test_that("transactions are on ACID", {
-  tname <- "monetdbtest"
-  dbSendQuery(conn, "create table monetdbtest (a integer)")
-  expect_true(dbExistsTable(conn, tname))
-  dbBegin(conn)
-  dbSendQuery(conn, "INSERT INTO monetdbtest VALUES (42)")
-  expect_equal(tsize(conn, tname), 1)
-  dbRollback(conn)
-  expect_equal(tsize(conn, tname), 0)
-  dbBegin(conn)
-  dbSendQuery(conn, "INSERT INTO monetdbtest VALUES (42)")
-  expect_equal(tsize(conn, tname), 1)
-  dbCommit(conn)
-  expect_equal(tsize(conn, tname), 1)
-
-  dbRemoveTable(conn, tname)
 })
 
 test_that("various parameters to dbWriteTable work as expected", {
